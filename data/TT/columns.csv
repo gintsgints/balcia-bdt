@@ -1,0 +1,24 @@
+skip,id,table_type_id,title,col_name,ref_code,adm_codificator_id,sequence,is_key,options,select_params,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+skip,,TT_CONFIG,Valid from,VALID_FROM,VALID_FROM,,1,N,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+skip,,TT_CONFIG,Valid to,VALID_TO,VALID_TO,,2,N,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+skip,,TT_CONFIG,Parameter type,CONFIG_TYPE,CDF1_ID,TT_CONFIG_TYPE_ID,3,Y,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+skip,,TT_CONFIG,Parameter value,CONFIG_VALUE,TEXT1,,4,Y,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+skip,,TT_CONFIG,Parameter numeric value,CONFIG_NUM_VALUE,NUM1,,5,Y,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,TT01_POWER_FACTOR_DEFAULT_SEARCH_CONFIG,Sequence,SEQUENCE,NUM1,,1,N,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
+,,TT01_POWER_FACTOR_DEFAULT_SEARCH_CONFIG,Power,POWER,CDF1_ID,BDT_SEARCH_CONFIG_TYPE,2,Y,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
+,,TT01_POWER_FACTOR_DEFAULT_SEARCH_CONFIG,Vehicle type group,VEHICLE_TYPE_GROUP,CDF2_ID,BDT_SEARCH_CONFIG_TYPE,3,Y,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
+,,TT01_POWER_FACTOR_DEFAULT_SEARCH_CONFIG,Policy holder type,POLICY_HOLDER_TYPE,CDF3_ID,BDT_SEARCH_CONFIG_TYPE,4,Y,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
+,,TT01_POWER_FACTOR_DEFAULT_SEARCH_CONFIG,Bonus malus,BONUS_MALUS,CDF4_ID,BDT_SEARCH_CONFIG_TYPE,5,Y,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
+,,TT01_POWER_FACTOR_DEFAULT_SEARCH_CONFIG,Bonus malus scenario,BONUS_MALUS_SCENARIO,CDF5_ID,BDT_SEARCH_CONFIG_TYPE,6,Y,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
+,,TT_FUEL_TYPE_REGITRA_MAP,Valid from,VALID_FROM,VALID_FROM,,1,N,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
+,,TT_FUEL_TYPE_REGITRA_MAP,Valid to,VALID_TO,VALID_TO,,2,N,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
+,,TT_FUEL_TYPE_REGITRA_MAP,Fuel type from Regitra,FUEL_TYPE_FROM_REGITRA,TEXT1,,3,Y,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
+,,TT_FUEL_TYPE_REGITRA_MAP,Fuel type,FUEL_TYPE,CDF1_ID,TT_FUEL_TYPE,4,Y,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
+,,TT_COMBINED_POLICY_DISCOUNT,Policy type,POLICY_TYPE,CDF1_ID,AGR_TYPE,1,Y,,icprefix=TT0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
+,,TT_COMBINED_POLICY_DISCOUNT,Valid from,VALID_FROM,VALID_FROM,,2,Y,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
+,,TT_COMBINED_POLICY_DISCOUNT,Valid to,VALID_TO,VALID_TO,,3,Y,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
+,,TT_COMBINED_POLICY_DISCOUNT,%,PERCENT,NUM1,,4,N,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
+,,TT02_DEPRECIATION_CONFIG_BY_VEHICLE_AGE,Age from,AGE_FROM,NUM1,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
+,,TT02_DEPRECIATION_CONFIG_BY_VEHICLE_AGE,Age till,AGE_TILL,NUM2,,2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
+,,TT02_DEPRECIATION_CONFIG_BY_VEHICLE_AGE,Read only,READ_ONLY,CDF1_ID,YN,3,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
+,,TT02_DEPRECIATION_CONFIG_BY_VEHICLE_AGE,Default field value,DEFAULT_FIELD_VALUE,CDF2_ID,YN,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
