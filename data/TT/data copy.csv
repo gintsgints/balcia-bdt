@@ -1,4 +1,0 @@
-skip,id,table_type,valid_from,valid_to,cdf1,cdf2,cdf3,cdf4,cdf5,cdf6,cdf7,cdf8,cdf9,cdf10,cdf11,cdf12,cdf13,cdf14,cdf15,num1,num2,num3,num4,num5,num6,num7,num8,num9,num10,text1,text2,text3,text4,text5,cdf16,,,,,,,,,,,,,,,,,,
-skip,,TT_CONFIG,,,SEC_PYMT_DAYS_BEFORE_ALL_C,,,,,,,,,,,,,,,15,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-skip,,TT_CONFIG,9/1/2017,,POLICY_DEFAULT_PREMIUM,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-skip,,TT_CONFIG,,,MANDATORY_CONTRACT_PERIOD_1_YEAR,,,,,,,,,,,,,,,,,,,,,,,,,Y,,,,,,,,,,,,,,,,,,,,,,,

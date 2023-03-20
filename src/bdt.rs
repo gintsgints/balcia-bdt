@@ -6,7 +6,7 @@ pub mod column_value;
 
 use crate::en_date_format;
 
-use column_value::RowValues;
+pub use column_value::RowValues;
 
 #[allow(dead_code)]
 #[derive(Debug, Serialize)]

@@ -19,7 +19,7 @@ pub struct ColumnValue {
 }
 
 impl ColumnValue {
-    fn new(name: String, value: ColumnValueType) -> ColumnValue {
+    pub fn new(name: String, value: ColumnValueType) -> ColumnValue {
         ColumnValue { name, value }
     }
 }
@@ -30,16 +30,16 @@ pub struct RowValues {
 }
 
 impl RowValues {
-    fn new() -> RowValues {
+    pub fn new() -> RowValues {
         RowValues { values: Vec::new() }
     }
 
-    fn push(&mut self, value: ColumnValue) {
+    pub fn push(&mut self, value: ColumnValue) {
         self.values.push(value)
     }
 
     #[allow(dead_code)]
-    fn get(&mut self, index: usize) -> Option<&ColumnValue> {
+    pub fn get(&mut self, index: usize) -> Option<&ColumnValue> {
         self.values.get(index)
     }
 }

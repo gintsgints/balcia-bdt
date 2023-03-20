@@ -10,6 +10,8 @@ use csv::{ReaderBuilder, DeserializeRecordsIntoIter};
 
 use crate::bdt::*;
 use crate::bdt::column_type::ColumnType;
+use crate::bdt::column_value::{ColumnValue, ColumnValueType};
+use crate::bdt::column_value::RowValues;
 use crate::en_date_format;
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -131,6 +133,51 @@ pub struct DataRow {
     pub text5: String,
 }
 
+impl DataRow {
+    fn to_column_value(&self, columns: &Vec<Column>) -> RowValues {
+        let mut values = RowValues::new();
+        for col in columns.iter() {
+            let column_value = match col.ref_code.as_str() {
+                "VALID_FROM" => { ColumnValue::new(col.name.clone(), ColumnValueType::Date(self.valid_from)) }
+                "VALID_TO" => { ColumnValue::new(col.name.clone(), ColumnValueType::Date(self.valid_to)) }
+                "NUM1" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num1)) }
+                "NUM2" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num2)) }
+                "NUM3" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num3)) }
+                "NUM4" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num4)) }
+                "NUM5" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num5)) }
+                "NUM6" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num6)) }
+                "NUM7" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num7)) }
+                "NUM8" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num8)) }
+                "NUM9" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num9)) }
+                "NUM10" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num10)) }
+                "TEXT1" => { ColumnValue::new(col.name.clone(), ColumnValueType::Text(self.text1.clone())) }
+                "TEXT2" => { ColumnValue::new(col.name.clone(), ColumnValueType::Text(self.text2.clone())) }
+                "TEXT3" => { ColumnValue::new(col.name.clone(), ColumnValueType::Text(self.text3.clone())) }
+                "TEXT4" => { ColumnValue::new(col.name.clone(), ColumnValueType::Text(self.text4.clone())) }
+                "TEXT5" => { ColumnValue::new(col.name.clone(), ColumnValueType::Text(self.text5.clone())) }
+                "CDF1_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf1.clone())) }
+                "CDF2_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf2.clone())) }
+                "CDF3_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf3.clone())) }
+                "CDF4_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf4.clone())) }
+                "CDF5_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf5.clone())) }
+                "CDF6_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf6.clone())) }
+                "CDF7_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf7.clone())) }
+                "CDF8_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf8.clone())) }
+                "CDF9_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf9.clone())) }
+                "CDF10_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf10.clone())) }
+                "CDF11_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf11.clone())) }
+                "CDF12_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf12.clone())) }
+                "CDF13_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf13.clone())) }
+                "CDF14_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf14.clone())) }
+                "CDF15_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf15.clone())) }
+                &_ => todo!()
+            };
+            values.push(column_value);
+        }
+        return values;
+    }
+}
+
 pub struct CsvReader<T> {
     inner: DeserializeRecordsIntoIter<File, T>
 }
@@ -179,7 +226,7 @@ pub struct CsvAdapter {
 
 impl CsvAdapter {
     fn new(path: String) -> CsvAdapter {
-        let inner = CsvReader::<TableRow>::new(String::from(path.clone() + "/tables.csv")).expect("Error table reading csv");
+        let inner = CsvReader::<TableRow>::new(String::from(path.clone() + "/tables.csv")).expect("Error reading table csv");
         CsvAdapter { path, inner }
     }
 }
@@ -216,10 +263,16 @@ impl Iterator for CsvAdapter {
                     );
                     bdt.names.push(en_name);
 
-                    let columns = CsvReader::<ColumnRow>::new(String::from(self.path.clone() + "/columns.csv")).expect("Error table reading csv");
+                    let columns = CsvReader::<ColumnRow>::new(String::from(self.path.clone() + "/columns.csv")).expect("Error reading column csv");
                     for row in columns.filter(|col_row| col_row.table_type_id == bdt.ic) {
                         let col = row.to_column();
                         bdt.columns.push(col);
+                    }
+
+                    let data = CsvReader::<DataRow>::new(String::from(self.path.clone() + "/data.csv")).expect("Error reading data csv");
+                    for row in data.filter(|data_row| data_row.table_type == bdt.ic) {
+                        let data_row = row.to_column_value(&bdt.columns);
+                        bdt.data.push(data_row);
                     }
 
                     return Some(bdt)
@@ -292,5 +345,14 @@ mod tests {
         assert_eq!(v.len(), 5);
         assert_eq!(v.get(0).unwrap().ic, String::from("TT_CONFIG"));
         assert_eq!(v.get(0).unwrap().columns.len(), 5);
+    }
+
+    #[test]
+    fn read_bdt_data_from_csv() {
+        let adapter = CsvAdapter::new(String::from("./data/TT/"));
+        let v: Vec<Bdt> = adapter.collect();
+        assert_eq!(v.len(), 5);
+        assert_eq!(v.get(0).unwrap().ic, String::from("TT_CONFIG"));
+        assert_eq!(v.get(0).unwrap().data.len(), 15);
     }
 }
