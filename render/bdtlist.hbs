@@ -1,0 +1,42 @@
+ALTER SESSION SET NLS_NUMERIC_CHARACTERS = '. ';
+set define off
+set serveroutput on
+set feed off
+prompt flushing cfg cache...
+exec f.flush_codif_entry_cache();
+
+{{#each tables as |bdt|}}
+
+prompt Loading {{bdt.names.[0].name}}
+begin
+    CFGLOAD.STORE_CDF_IC(P_ADM_CODIFICATOR_ID=>f.get_cdf_id('COD','AGC_CUSTOM_TABLE_TYPE')   ,P_ADM_CODIF_ENTRY_ID=>f.get_cdf_id('AGC_CUSTOM_TABLE_TYPE','')   ,P_IC=>'{{bdt.ic}}'   ,P_CODE=>''   ,P_SEQUENCE=>''   ,P_NOTES=>''   ,P_VALID_FROM=>'{{bdt.valid_from}}'   ,P_VALID_TO=>'{{bdt.valid_to}}'   );
+    {{#each bdt.names as |name|}}
+    cfgload.store_cdflng(f.get_cdf_id('AGC_CUSTOM_TABLE_TYPE','{{bdt.ic}}'),'{{bdt.ic}}','{{name.lang}}','{{name.name}}','{{name.print_name}}','{{name.short_print_name}}');
+    {{/each}}
+end;
+/
+
+UPDATE agc_custom_table_type    SET AGC_TARIFF_PLAN_ID = (select id from agc_tariff_plan where code =  '')    WHERE id = f.get_cdf_id('AGC_CUSTOM_TABLE_TYPE','{{bdt.ic}}');
+INSERT INTO agc_custom_table_type   (ID, LOG_CRE_DATE, AGC_TARIFF_PLAN_ID)   SELECT f.get_cdf_id('AGC_CUSTOM_TABLE_TYPE','{{bdt.ic}}')         ,SYSDATE          ,(select id from agc_tariff_plan where code =  '')     FROM dual    WHERE not exists (select 1 from agc_custom_table_type where id=f.get_cdf_id('AGC_CUSTOM_TABLE_TYPE','{{bdt.ic}}'));
+delete from agc_ctb_columns cc where cc.table_type_id = f.get_cdf_id('AGC_CUSTOM_TABLE_TYPE','{{bdt.ic}}');
+{{#if (ne bdt.skip "skipData")}}
+delete from agc_ctb_data cd where cd.table_type_id = f.get_cdf_id('AGC_CUSTOM_TABLE_TYPE','{{bdt.ic}}');
+{{/if}}
+{{/each}}
+/
+
+{{#each tables as |bdt|}}
+prompt Loading table {{bdt.names.[0].name}} columns
+{{#each bdt.columns as |column|}}
+INSERT INTO agc_ctb_columns   (ID, LOG_CRE_DATE, ADM_CODIFICATOR_ID, TITLE, REF_CODE, SEQUENCE, COL_NAME, IS_KEY, TABLE_TYPE_ID, OPTIONS,SELECT_PARAMS)   SELECT hibernate_sequence.nextval         ,SYSDATE         ,f.get_cdf_id('COD','{{column.col_type.Cdf.codificator_id}}')         ,'{{column.title}}', '{{column.ref_code}}', '{{column.sequence}}', '{{column.name}}', '{{yn column.is_key ~}}'         ,f.get_cdf_id('AGC_CUSTOM_TABLE_TYPE','{{bdt.ic}}')      ,'{{column.options}}'  ,'{{column.col_type.Cdf.select_params}}'         FROM dual    WHERE not exists (select 1 from agc_ctb_columns where COL_NAME='{{column.name}}' and TABLE_TYPE_ID=f.get_cdf_id('AGC_CUSTOM_TABLE_TYPE','{{bdt.ic}}'));
+{{/each}}
+/
+
+{{#each tables as |bdt|}}
+prompt Loading policy.table {{bdt.names.[0].name}} data
+{{#each bdt.data as |data|}}
+values ? {{data.values}}
+{{/each}}
+{{/each}}
+
+{{/each}}

@@ -225,7 +225,7 @@ pub struct CsvAdapter {
 }
 
 impl CsvAdapter {
-    fn new(path: String) -> CsvAdapter {
+    pub fn new(path: String) -> CsvAdapter {
         let inner = CsvReader::<TableRow>::new(String::from(path.clone() + "/tables.csv")).expect("Error reading table csv");
         CsvAdapter { path, inner }
     }
@@ -248,13 +248,6 @@ impl Iterator for CsvAdapter {
                         data: Vec::new()
                     };
 
-                    let lv_name = TableName::new(
-                        Language::LV,
-                        row.name_lv.clone(),
-                        row.print_name_lv.clone(),
-                        row.short_print_name_lv.clone(),
-                    );
-                    bdt.names.push(lv_name);
                     let en_name = TableName::new(
                         Language::EN,
                         row.name_en.clone(),
@@ -262,6 +255,13 @@ impl Iterator for CsvAdapter {
                         row.short_print_name_en.clone(),
                     );
                     bdt.names.push(en_name);
+                    let lv_name = TableName::new(
+                        Language::LV,
+                        row.name_lv.clone(),
+                        row.print_name_lv.clone(),
+                        row.short_print_name_lv.clone(),
+                    );
+                    bdt.names.push(lv_name);
 
                     let columns = CsvReader::<ColumnRow>::new(String::from(self.path.clone() + "/columns.csv")).expect("Error reading column csv");
                     for row in columns.filter(|col_row| col_row.table_type_id == bdt.ic) {
@@ -354,5 +354,17 @@ mod tests {
         assert_eq!(v.len(), 5);
         assert_eq!(v.get(0).unwrap().ic, String::from("TT_CONFIG"));
         assert_eq!(v.get(0).unwrap().data.len(), 15);
+    }
+
+   #[test]
+    fn test_default_is_key() {
+        let adapter = CsvAdapter::new(String::from("./data/TT/"));
+        let v: Vec<Bdt> = adapter.collect();
+        assert_eq!(v.len(), 5);
+        assert_eq!(v.get(4).unwrap().columns.len(), 4);
+        assert_eq!(v.get(4).unwrap().ic, "TT02_DEPRECIATION_CONFIG_BY_VEHICLE_AGE");
+        assert_eq!(v.get(4).unwrap().columns.get(0).unwrap().name, "AGE_FROM");
+        assert_eq!(v.get(4).unwrap().columns.get(0).unwrap().is_key, false);
+        assert_eq!(v.get(4).unwrap().data.len(), 3);
     }
 }

@@ -10,3 +10,4 @@ csv = "1.2.0"
 serde = { version = "1.0.152", features = ["derive"] }
 chrono = "0.4.23"
 regex = "1.7.1"
+handlebars = "4.3.6"
