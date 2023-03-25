@@ -134,45 +134,183 @@ pub struct DataRow {
 }
 
 impl DataRow {
+    fn check_and_add_date_field(&self, columns: &Vec<Column>, ref_code: &str, date: Option<DateTime<Utc>>) -> Option<ColumnValue> {
+        if date.is_some() {
+            let find_col = columns.into_iter().find(|col| col.ref_code == ref_code);
+            let column_value = match find_col {
+                Some(value) => { ColumnValue::new(value.name.clone(), value.ref_code.clone(), ColumnValueType::Date(date)) }
+                None => panic!("CSV has data for tables {} undefined column {}", self.table_type, ref_code)                
+            };
+            return Some(column_value);
+        }
+        return None;
+    }
+
+    fn check_and_add_num_field(&self, columns: &Vec<Column>, ref_code: &str, num: Option<f64>) -> Option<ColumnValue> {
+        if num.is_some() {
+            let find_col = columns.into_iter().find(|col| col.ref_code == ref_code);
+            let column_value = match find_col {
+                Some(value) => { ColumnValue::new(value.name.clone(), value.ref_code.clone(), ColumnValueType::Num(num)) }
+                None => panic!("CSV has data for tables {} undefined column {}", self.table_type, ref_code)                
+            };
+            return Some(column_value);
+        }
+        return None;
+    }
+
+    fn check_and_add_text_field(&self, columns: &Vec<Column>, ref_code: &str, str_data: String) -> Option<ColumnValue> {
+        if str_data != "" {
+            let find_col = columns.into_iter().find(|col| col.ref_code == ref_code);
+            let column_value = match find_col {
+                Some(value) => { ColumnValue::new(value.name.clone(), value.ref_code.clone(), ColumnValueType::Text(str_data)) }
+                None => panic!("CSV has data for tables {} undefined column {}", self.table_type, ref_code)                
+            };
+            return Some(column_value);
+        }
+        return None;
+    }
+
+    fn check_and_add_cdf_field(&self, columns: &Vec<Column>, ref_code: &str, str_data: String) -> Option<ColumnValue> {
+        if str_data != "" {
+            let find_col = columns.into_iter().find(|col| col.ref_code == ref_code);
+            let column_value = match find_col {
+                Some(value) => { ColumnValue::new(value.name.clone(), value.ref_code.clone(), ColumnValueType::Cdf(str_data)) }
+                None => panic!("CSV has data for tables {} undefined column {}", self.table_type, ref_code)                
+            };
+            return Some(column_value);
+        }
+        return None;
+    }
+
     fn to_column_value(&self, columns: &Vec<Column>) -> RowValues {
         let mut values = RowValues::new();
-        for col in columns.iter() {
-            let column_value = match col.ref_code.as_str() {
-                "VALID_FROM" => { ColumnValue::new(col.name.clone(), ColumnValueType::Date(self.valid_from)) }
-                "VALID_TO" => { ColumnValue::new(col.name.clone(), ColumnValueType::Date(self.valid_to)) }
-                "NUM1" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num1)) }
-                "NUM2" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num2)) }
-                "NUM3" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num3)) }
-                "NUM4" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num4)) }
-                "NUM5" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num5)) }
-                "NUM6" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num6)) }
-                "NUM7" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num7)) }
-                "NUM8" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num8)) }
-                "NUM9" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num9)) }
-                "NUM10" => { ColumnValue::new(col.name.clone(), ColumnValueType::Num(self.num10)) }
-                "TEXT1" => { ColumnValue::new(col.name.clone(), ColumnValueType::Text(self.text1.clone())) }
-                "TEXT2" => { ColumnValue::new(col.name.clone(), ColumnValueType::Text(self.text2.clone())) }
-                "TEXT3" => { ColumnValue::new(col.name.clone(), ColumnValueType::Text(self.text3.clone())) }
-                "TEXT4" => { ColumnValue::new(col.name.clone(), ColumnValueType::Text(self.text4.clone())) }
-                "TEXT5" => { ColumnValue::new(col.name.clone(), ColumnValueType::Text(self.text5.clone())) }
-                "CDF1_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf1.clone())) }
-                "CDF2_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf2.clone())) }
-                "CDF3_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf3.clone())) }
-                "CDF4_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf4.clone())) }
-                "CDF5_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf5.clone())) }
-                "CDF6_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf6.clone())) }
-                "CDF7_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf7.clone())) }
-                "CDF8_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf8.clone())) }
-                "CDF9_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf9.clone())) }
-                "CDF10_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf10.clone())) }
-                "CDF11_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf11.clone())) }
-                "CDF12_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf12.clone())) }
-                "CDF13_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf13.clone())) }
-                "CDF14_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf14.clone())) }
-                "CDF15_ID" => { ColumnValue::new(col.name.clone(), ColumnValueType::Cdf(self.cdf15.clone())) }
-                &_ => todo!()
-            };
-            values.push(column_value);
+        match self.check_and_add_date_field(columns, "VALID_FROM", self.valid_from) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        };
+        match self.check_and_add_date_field(columns, "VALID_TO", self.valid_from) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        };
+        match self.check_and_add_num_field(columns, "NUM1", self.num1) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_num_field(columns, "NUM2", self.num2) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_num_field(columns, "NUM3", self.num3) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_num_field(columns, "NUM4", self.num4) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_num_field(columns, "NUM5", self.num5) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_num_field(columns, "NUM6", self.num6) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_num_field(columns, "NUM7", self.num7) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_num_field(columns, "NUM8", self.num8) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_num_field(columns, "NUM9", self.num9) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_num_field(columns, "NUM10", self.num10) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_text_field(columns, "TEXT1", self.text1.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_text_field(columns, "TEXT2", self.text2.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_text_field(columns, "TEXT3", self.text3.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_text_field(columns, "TEXT4", self.text4.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_text_field(columns, "TEXT5", self.text5.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_cdf_field(columns, "CDF1_ID", self.cdf1.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_cdf_field(columns, "CDF2_ID", self.cdf2.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_cdf_field(columns, "CDF3_ID", self.cdf3.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_cdf_field(columns, "CDF4_ID", self.cdf4.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_cdf_field(columns, "CDF5_ID", self.cdf5.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_cdf_field(columns, "CDF6_ID", self.cdf6.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_cdf_field(columns, "CDF7_ID", self.cdf7.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_cdf_field(columns, "CDF8_ID", self.cdf8.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_cdf_field(columns, "CDF9_ID", self.cdf9.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_cdf_field(columns, "CDF10_ID", self.cdf10.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_cdf_field(columns, "CDF11_ID", self.cdf11.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_cdf_field(columns, "CDF12_ID", self.cdf12.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_cdf_field(columns, "CDF13_ID", self.cdf13.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_cdf_field(columns, "CDF14_ID", self.cdf14.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
+        }
+        match self.check_and_add_cdf_field(columns, "CDF15_ID", self.cdf15.clone()) {
+            Some(column_value) => values.push(column_value),
+            None => {}
         }
         return values;
     }
@@ -329,6 +467,24 @@ mod tests {
     }
 
     #[test]
+    #[should_panic]
+    fn data_for_nonexistant_column() {
+        let iter_d = CsvReader::<DataRow>::new(String::from("./data/TT/data_extra_data.csv")).expect("Error reading csv");
+        let data: Vec<_> = iter_d.collect();
+        assert_eq!(data.len(), 1);
+
+        let columns = CsvReader::<ColumnRow>::new(String::from("./data/TT/columns.csv")).expect("Error reading csv");
+        let mut test_columns: Vec<Column> = Vec::new();
+        for row in columns {
+            if row.table_type_id == data.get(0).unwrap().table_type {
+                let col = row.to_column();
+                test_columns.push(col);
+            }
+        }
+        data.get(0).unwrap().to_column_value(&test_columns);
+    }
+
+    #[test]
     fn can_iterate_data() {
         let iter = CsvReader::<DataRow>::new(String::from("./data/TT/data.csv")).expect("Error reading csv");
         let mut i = 0;
@@ -339,7 +495,7 @@ mod tests {
     }
 
     #[test]
-    fn read_bdt_from_csv() {
+    fn read_bdt_columns_from_csv() {
         let adapter = CsvAdapter::new(String::from("./data/TT/"));
         let v: Vec<Bdt> = adapter.collect();
         assert_eq!(v.len(), 5);
