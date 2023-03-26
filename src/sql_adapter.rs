@@ -1,5 +1,6 @@
 use handlebars::{Context, Handlebars, Helper, Output, RenderContext, RenderError};
 use serde::Serialize;
+use serde_json::json;
 use std::error::Error;
 use std::fs::File;
 
@@ -34,7 +35,23 @@ fn data_field_helper(
                     let print_value = value["value"].as_object();
                     match print_value {
                         Some(v) => {
-                            write!(out, "{}", v["Cdf"].as_str().get_or_insert(""))?
+                            match v.get("Cdf") {
+                                Some(vv) => write!(out, "{}", vv.as_str().get_or_insert(""))?,
+                                None => {}
+                            }
+                            match v.get("Text") {
+                                Some(vv) => write!(out, "{}", vv.as_str().get_or_insert(""))?,
+                                None => {}
+                            } 
+                            match v.get("Num") {
+                                Some(vv) => {
+                                    match vv.as_f64() {
+                                        Some(float_val) => write!(out, "{}", float_val)?,
+                                        None => {}
+                                    }
+                                },
+                                None => {}
+                            } 
                         },
                         None => {}
                     }
@@ -42,24 +59,7 @@ fn data_field_helper(
             },
             None => {}
         }
-
-        // let col = 
-        //     value.as_object().unwrap().get("name").unwrap();
-        // let column_value:ColumnValue = serde_json::from_value(*col).unwrap();
-        // let name = &column_value.name.clone();
-        // if column_value.name.clone() == field_ref {
-            // write!(out, "value")
-        // }
-        // match column_value {
-        //     Cdf(v) => write!(out, "{}", v.clone()),
-        //     _ => todo!()            
-        // }
-        // write!(out, "{}", row_value.value());
     }
-    // let value_array: Vec<ColumnValue> = serde_json::from_value(*field_value).unwrap();
-    
-    // let tst = field_value.get("name").unwrap().as_str().unwrap();
-    // write!(out, "{}", field_value.value())?;
     Ok(())
 }
 
@@ -152,7 +152,7 @@ mod tests {
     }
 
     #[test]
-    fn data_field_helper_test() {
+    fn data_field_helper_test_cdf() {
         let source = r#"{{df data "CDF2_ID" ~}}"#;
         let data_json = r#"[{
                 "name": "AGE_FROM",
@@ -180,4 +180,35 @@ mod tests {
         column_data.insert("data", values);
         assert_eq!(handlebars.render("testing", &column_data).unwrap(), "Y");
     }
+
+    #[test]
+    fn data_field_helper_test_num() {
+        let source = r#"{{df data "NUM2" ~}}"#;
+        let data_json = r#"[{
+                "name": "AGE_FROM",
+                "ref_code": "NUM1",
+                "value": {"Num": 0.0}
+            },{
+                "name": "AGE_TILL",
+                "ref_code": "NUM2",
+                "value": {"Num": 4.0}
+            },{
+                "name": "READ_ONLY",
+                "ref_code": "CDF1_ID",
+                "value": {"Cdf": "Y"}
+            },{
+                "name": "DEFAULT_FIELD_VALUE",
+                "ref_code": "CDF2_ID",
+                "value": {"Cdf": "Y"}
+            }]"#;
+        let values:Vec<ColumnValue> = serde_json::from_str(data_json).unwrap();
+
+        let mut handlebars = setup(source);
+        handlebars.register_helper("df", Box::new(data_field_helper));
+
+        let mut column_data: HashMap<&str, Vec<ColumnValue>> = HashMap::new();
+        column_data.insert("data", values);
+        assert_eq!(handlebars.render("testing", &column_data).unwrap(), "4");
+    }
+
 }
