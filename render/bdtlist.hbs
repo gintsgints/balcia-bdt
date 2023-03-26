@@ -31,12 +31,11 @@ prompt Loading table {{bdt.names.[0].name}} columns
 INSERT INTO agc_ctb_columns   (ID, LOG_CRE_DATE, ADM_CODIFICATOR_ID, TITLE, REF_CODE, SEQUENCE, COL_NAME, IS_KEY, TABLE_TYPE_ID, OPTIONS,SELECT_PARAMS)   SELECT hibernate_sequence.nextval         ,SYSDATE         ,f.get_cdf_id('COD','{{column.col_type.Cdf.codificator_id}}')         ,'{{column.title}}', '{{column.ref_code}}', '{{column.sequence}}', '{{column.name}}', '{{yn column.is_key ~}}'         ,f.get_cdf_id('AGC_CUSTOM_TABLE_TYPE','{{bdt.ic}}')      ,'{{column.options}}'  ,'{{column.col_type.Cdf.select_params}}'         FROM dual    WHERE not exists (select 1 from agc_ctb_columns where COL_NAME='{{column.name}}' and TABLE_TYPE_ID=f.get_cdf_id('AGC_CUSTOM_TABLE_TYPE','{{bdt.ic}}'));
 {{/each}}
 /
+{{/each}}
 
 {{#each tables as |bdt|}}
 prompt Loading policy.table {{bdt.names.[0].name}} data
 {{#each bdt.data as |data|}}
-values ? {{data.values}}
+exec cfgload.store_ctb_data('{{bdt.skip}}','{{bdt.ic}}',{{df data.values.[1] "VALID_TO" ~}},{{df data.values.[1] "VALID_FROM" ~}}
 {{/each}}
-{{/each}}
-
 {{/each}}

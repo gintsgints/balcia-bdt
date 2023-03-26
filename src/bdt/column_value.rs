@@ -1,5 +1,5 @@
 use chrono::{DateTime, Utc};
-use serde::{Serialize};
+use serde::Serialize;
 
 use super::super::en_date_format;
 
@@ -15,12 +15,17 @@ pub enum ColumnValueType {
 #[derive(Debug, Serialize)]
 pub struct ColumnValue {
     pub name: String,
+    pub ref_code: String,
     pub value: ColumnValueType,
 }
 
 impl ColumnValue {
-    pub fn new(name: String, value: ColumnValueType) -> ColumnValue {
-        ColumnValue { name, value }
+    pub fn new(name: String, ref_code: String, value: ColumnValueType) -> ColumnValue {
+        ColumnValue {
+            name,
+            ref_code,
+            value,
+        }
     }
 }
 
@@ -36,6 +41,10 @@ impl RowValues {
 
     pub fn push(&mut self, value: ColumnValue) {
         self.values.push(value)
+    }
+
+    pub fn len(&mut self) -> usize {
+        self.values.len()
     }
 
     #[allow(dead_code)]
