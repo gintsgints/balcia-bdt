@@ -1,9 +1,9 @@
 use chrono::{DateTime, Utc};
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
 use super::super::en_date_format;
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum ColumnValueType {
     #[serde(with = "en_date_format")]
     Date(Option<DateTime<Utc>>),
@@ -12,7 +12,7 @@ pub enum ColumnValueType {
     Text(String),
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ColumnValue {
     pub name: String,
     pub ref_code: String,
@@ -29,7 +29,7 @@ impl ColumnValue {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct RowValues {
     values: Vec<ColumnValue>,
 }

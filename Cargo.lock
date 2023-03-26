@@ -35,6 +35,7 @@ dependencies = [
  "handlebars",
  "regex",
  "serde",
+ "serde_json",
 ]
 
 [[package]]

@@ -4,6 +4,7 @@ use std::error::Error;
 use std::fs::File;
 
 use crate::Bdt;
+use crate::bdt::column_value::ColumnValue;
 
 fn data_field_helper(
     h: &Helper,
@@ -12,9 +13,9 @@ fn data_field_helper(
     _: &mut RenderContext,
     out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let field_value = h
+    let mut field_value = h
         .param(0)
-        .and_then(|ref v| v.value().as_object())
+        .and_then(|ref v| v.value().as_array())
         .ok_or(RenderError::new(
             "Param 0 with field value object is required for data field helper.",
         ))?;
@@ -24,7 +25,41 @@ fn data_field_helper(
         .ok_or(RenderError::new(
             "Param 1 with field ref string is required for data field helper.",
         ))?;
-    let tst = field_value.get("name").unwrap().as_str().unwrap();
+    
+    for value in field_value.iter() {
+        let test_code = value["ref_code"].as_str();
+        match test_code {
+            Some(v) => {
+                if v == field_ref {
+                    let print_value = value["value"].as_object();
+                    match print_value {
+                        Some(v) => {
+                            write!(out, "{}", v["Cdf"].as_str().get_or_insert(""))?
+                        },
+                        None => {}
+                    }
+                }
+            },
+            None => {}
+        }
+
+        // let col = 
+        //     value.as_object().unwrap().get("name").unwrap();
+        // let column_value:ColumnValue = serde_json::from_value(*col).unwrap();
+        // let name = &column_value.name.clone();
+        // if column_value.name.clone() == field_ref {
+            // write!(out, "value")
+        // }
+        // match column_value {
+        //     Cdf(v) => write!(out, "{}", v.clone()),
+        //     _ => todo!()            
+        // }
+        // write!(out, "{}", row_value.value());
+    }
+    // let value_array: Vec<ColumnValue> = serde_json::from_value(*field_value).unwrap();
+    
+    // let tst = field_value.get("name").unwrap().as_str().unwrap();
+    // write!(out, "{}", field_value.value())?;
     Ok(())
 }
 
@@ -72,12 +107,9 @@ pub fn write_bdt(tables: Vec<Bdt>) -> Result<(), Box<dyn Error>> {
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
-    use chrono::offset::Utc;
-
 
     use super::*;
-    use crate::bdt::column_value::ColumnValue;
-    use crate::bdt::column_value::ColumnValueType;
+    use crate::bdt::{column_value::ColumnValue};
 
     fn setup(source: &str) -> Handlebars {
         let mut handlebars = Handlebars::new();
@@ -121,17 +153,31 @@ mod tests {
 
     #[test]
     fn data_field_helper_test() {
-        let source = r#"{{df data "VALID_FROM" ~}}"#;
+        let source = r#"{{df data "CDF2_ID" ~}}"#;
+        let data_json = r#"[{
+                "name": "AGE_FROM",
+                "ref_code": "NUM1",
+                "value": {"Num": 0.0}
+            },{
+                "name": "AGE_TILL",
+                "ref_code": "NUM2",
+                "value": {"Num": 4.0}
+            },{
+                "name": "READ_ONLY",
+                "ref_code": "CDF1_ID",
+                "value": {"Cdf": "Y"}
+            },{
+                "name": "DEFAULT_FIELD_VALUE",
+                "ref_code": "CDF2_ID",
+                "value": {"Cdf": "Y"}
+            }]"#;
+        let values:Vec<ColumnValue> = serde_json::from_str(data_json).unwrap();
+
         let mut handlebars = setup(source);
         handlebars.register_helper("df", Box::new(data_field_helper));
 
         let mut column_data: HashMap<&str, Vec<ColumnValue>> = HashMap::new();
-        let col1 = ColumnValue::new("Valid from".to_string(), "VALID_FROM".to_string(), ColumnValueType::Date(Some(Utc::now())));
-        let col2 = ColumnValue::new("Long name".to_string(), "NUM1".to_string(), ColumnValueType::Num(Some(354.)));
-        let mut data: Vec<ColumnValue> = Vec::new();
-        data.push(col1);
-        data.push(col2);
-        column_data.insert("data", data);
-        // assert_eq!(handlebars.render("testing", &column_data).unwrap(), "N");
+        column_data.insert("data", values);
+        assert_eq!(handlebars.render("testing", &column_data).unwrap(), "Y");
     }
 }
