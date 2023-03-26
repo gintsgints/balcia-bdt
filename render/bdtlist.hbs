@@ -36,6 +36,6 @@ INSERT INTO agc_ctb_columns   (ID, LOG_CRE_DATE, ADM_CODIFICATOR_ID, TITLE, REF_
 {{#each tables as |bdt|}}
 prompt Loading policy.table {{bdt.names.[0].name}} data
 {{#each bdt.data as |data|}}
-exec cfgload.store_ctb_data('{{bdt.skip}}','{{bdt.ic}}',{{df data.values.[1] "VALID_TO" ~}},{{df data.values.[1] "VALID_FROM" ~}}
+exec cfgload.store_ctb_data('{{bdt.skip}}','{{bdt.ic}}',{{df data.values "VALID_FROM" ~}},{{df data.values "VALID_TO" ~}}
 {{/each}}
 {{/each}}

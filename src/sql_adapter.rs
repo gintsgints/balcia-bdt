@@ -1,11 +1,9 @@
 use handlebars::{Context, Handlebars, Helper, Output, RenderContext, RenderError};
 use serde::Serialize;
-use serde_json::json;
 use std::error::Error;
 use std::fs::File;
 
 use crate::Bdt;
-use crate::bdt::column_value::ColumnValue;
 
 fn data_field_helper(
     h: &Helper,
@@ -14,7 +12,7 @@ fn data_field_helper(
     _: &mut RenderContext,
     out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let mut field_value = h
+    let field_value = h
         .param(0)
         .and_then(|ref v| v.value().as_array())
         .ok_or(RenderError::new(
@@ -47,6 +45,15 @@ fn data_field_helper(
                                 Some(vv) => {
                                     match vv.as_f64() {
                                         Some(float_val) => write!(out, "{}", float_val)?,
+                                        None => {}
+                                    }
+                                },
+                                None => {}
+                            } 
+                            match v.get("Date") {
+                                Some(vv) => {
+                                    match vv.as_str() {
+                                        Some(vv) => write!(out, "{}", vv)?,
                                         None => {}
                                     }
                                 },
@@ -92,6 +99,7 @@ struct BdtList {
 pub fn write_bdt(tables: Vec<Bdt>) -> Result<(), Box<dyn Error>> {
     let mut handlebars = Handlebars::new();
     handlebars.register_helper("yn", Box::new(yn_helper));
+    handlebars.register_helper("df", Box::new(data_field_helper));
     handlebars
         .register_template_file("template", "./render/bdtlist.hbs")
         .unwrap();
@@ -209,6 +217,38 @@ mod tests {
         let mut column_data: HashMap<&str, Vec<ColumnValue>> = HashMap::new();
         column_data.insert("data", values);
         assert_eq!(handlebars.render("testing", &column_data).unwrap(), "4");
+    }
+
+    #[test]
+    fn data_field_helper_test_date() {
+        let source = r#"{{df data "VALID_TO" ~}}"#;
+        let data_json = r#"[{
+                "name": "AGE_FROM",
+                "ref_code": "NUM1",
+                "value": {"Num": 0.0}
+            },{
+                "name": "VALID_TO",
+                "ref_code": "VALID_TO",
+                "value": {
+                    "Date": "2017-09-01 00:01:00"
+                }
+            },{
+                "name": "READ_ONLY",
+                "ref_code": "CDF1_ID",
+                "value": {"Cdf": "Y"}
+            },{
+                "name": "DEFAULT_FIELD_VALUE",
+                "ref_code": "CDF2_ID",
+                "value": {"Cdf": "Y"}
+            }]"#;
+        let values:Vec<ColumnValue> = serde_json::from_str(data_json).unwrap();
+
+        let mut handlebars = setup(source);
+        handlebars.register_helper("df", Box::new(data_field_helper));
+
+        let mut column_data: HashMap<&str, Vec<ColumnValue>> = HashMap::new();
+        column_data.insert("data", values);
+        assert_eq!(handlebars.render("testing", &column_data).unwrap(), "2017-09-01 00:01:00");
     }
 
 }
