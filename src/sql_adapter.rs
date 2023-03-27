@@ -105,7 +105,7 @@ pub fn write_bdt(tables: Vec<Bdt>) -> Result<(), Box<dyn Error>> {
         .unwrap();
     let mut output_file = File::create("data/TT/R__1211_load_agr_table.TT.sql")?;
     let bdtlist = BdtList {
-        tables: tables.into_iter().filter(|bdt| bdt.skip == "").collect(),
+        tables: tables.into_iter().filter(|bdt| !"skip".eq(bdt.skip.as_str())).collect(),
     };
     handlebars.render_to_write("template", &bdtlist, &mut output_file)?;
 

@@ -36,6 +36,8 @@ INSERT INTO agc_ctb_columns   (ID, LOG_CRE_DATE, ADM_CODIFICATOR_ID, TITLE, REF_
 {{#each tables as |bdt|}}
 prompt Loading policy.table {{bdt.names.[0].name}} data
 {{#each bdt.data as |data|}}
+{{#if (ne bdt.skip "skipData")}}
 exec cfgload.store_ctb_data('{{bdt.skip}}','{{bdt.ic}}','{{df data.values "VALID_FROM" ~}}','{{df data.values "VALID_TO" ~}}','{{df data.values "CDF1_ID" ~}}','{{df data.values "CDF2_ID" ~}}','{{df data.values "CDF3_ID" ~}}','{{df data.values "CDF4_ID" ~}}','{{df data.values "CDF5_ID" ~}}','{{df data.values "CDF6_ID" ~}}','{{df data.values "CDF7_ID" ~}}','{{df data.values "CDF8_ID" ~}}','{{df data.values "CDF9_ID" ~}}','{{df data.values "CDF10_ID" ~}}','{{df data.values "CDF11_ID" ~}}','{{df data.values "CDF12_ID" ~}}','{{df data.values "CDF13_ID" ~}}','{{df data.values "CDF14_ID" ~}}','{{df data.values "CDF15_ID" ~}}','{{df data.values "NUM1" ~}}','{{df data.values "NUM2" ~}}','{{df data.values "NUM3" ~}}','{{df data.values "NUM4" ~}}','{{df data.values "NUM5" ~}}','{{df data.values "NUM6" ~}}','{{df data.values "NUM7" ~}}','{{df data.values "NUM8" ~}}','{{df data.values "NUM9" ~}}','{{df data.values "NUM10" ~}}','{{df data.values "TEXT1" ~}}','{{df data.values "TEXT2" ~}}','{{df data.values "TEXT3" ~}}','{{df data.values "TEXT4" ~}}','{{df data.values "TEXT5" ~}}','{{df data.values "CDF15_ID" ~}}');
+{{/if}}
 {{/each}}
 {{/each}}
