@@ -4,7 +4,7 @@ use std::fs::File;
 use std::error::Error;
 use regex::Regex;
 
-use chrono::{DateTime, Utc};
+use chrono::{NaiveDate};
 use serde::{Deserialize, Serialize};
 use csv::{ReaderBuilder, DeserializeRecordsIntoIter};
 
@@ -12,7 +12,7 @@ use crate::bdt::*;
 use crate::bdt::column_type::ColumnType;
 use crate::bdt::column_value::{ColumnValue, ColumnValueType};
 use crate::bdt::column_value::RowValues;
-use crate::en_date_format;
+use crate::format::lv_date_format;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct TableRow {
@@ -23,10 +23,10 @@ pub struct TableRow {
     pub ic: String,
     pub notes: String,
     pub code: String,
-    #[serde(with = "en_date_format")]
-    pub valid_from: Option<DateTime<Utc>>,
-    #[serde(with = "en_date_format")]
-    pub valid_to: Option<DateTime<Utc>>,
+    #[serde(with = "lv_date_format")]
+    pub valid_from: Option<NaiveDate>,
+    #[serde(with = "lv_date_format")]
+    pub valid_to: Option<NaiveDate>,
     pub sequence: Option<u16>,
     pub name_lv: String,
     pub print_name_lv: String,
@@ -97,10 +97,10 @@ pub struct DataRow {
     pub skip: String,
     pub id: Option<u64>,
     pub table_type: String,
-    #[serde(with = "en_date_format")]
-    pub valid_from: Option<DateTime<Utc>>,
-    #[serde(with = "en_date_format")]
-    pub valid_to: Option<DateTime<Utc>>,
+    #[serde(with = "lv_date_format")]
+    pub valid_from: Option<NaiveDate>,
+    #[serde(with = "lv_date_format")]
+    pub valid_to: Option<NaiveDate>,
     pub cdf1: String,
     pub cdf2: String,
     pub cdf3: String,
@@ -134,7 +134,7 @@ pub struct DataRow {
 }
 
 impl DataRow {
-    fn check_and_add_date_field(&self, columns: &Vec<Column>, ref_code: &str, date: Option<DateTime<Utc>>) -> Option<ColumnValue> {
+    fn check_and_add_date_field(&self, columns: &Vec<Column>, ref_code: &str, date: Option<NaiveDate>) -> Option<ColumnValue> {
         if date.is_some() {
             let find_col = columns.into_iter().find(|col| col.ref_code == ref_code);
             let column_value = match find_col {

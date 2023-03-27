@@ -1,5 +1,5 @@
 skip,id,adm_codificator_ic,parent_ic,ic,notes,code,valid_from,valid_to,sequence,name_lv,print_name_lv,short_print_name_lv,name_en,print_name_en,short_print_name_en,agc_tariff_plan_id,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-skip,,AGC_CUSTOM_TABLE_TYPE,,TT_CONFIG,,,2020-12-24 23:45:00,,,TT Konfigurācijas parametri,,,TT Configuration parameters,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+skip,,AGC_CUSTOM_TABLE_TYPE,,TT_CONFIG,,,24.12.2020,,,TT Konfigurācijas parametri,,,TT Configuration parameters,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,AGC_CUSTOM_TABLE_TYPE,,TT01_POWER_FACTOR_DEFAULT_SEARCH_CONFIG,,,,,,TT01 Jaudas faktors - meklēšanas konfigurācija,,,TT01 Power factor - search configuration,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
 ,,AGC_CUSTOM_TABLE_TYPE,,TT_FUEL_TYPE_REGITRA_MAP,,,,,,TT Fuel type Regitra map,,,TT Fuel type Regitra map,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?
 skipData,,AGC_CUSTOM_TABLE_TYPE,,TT_COMBINED_POLICY_DISCOUNT,,,,,,TT Combined policy discounts,,,TT Combined policy discounts,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#NAME?

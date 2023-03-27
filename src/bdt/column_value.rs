@@ -1,12 +1,12 @@
-use chrono::{DateTime, Utc};
+use chrono::{NaiveDate};
 use serde::{Serialize, Deserialize};
 
-use super::super::en_date_format;
+use crate::format::lv_date_format;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum ColumnValueType {
-    #[serde(with = "en_date_format")]
-    Date(Option<DateTime<Utc>>),
+    #[serde(with = "lv_date_format")]
+    Date(Option<NaiveDate>),
     Cdf(String),
     Num(Option<f64>),
     Text(String),

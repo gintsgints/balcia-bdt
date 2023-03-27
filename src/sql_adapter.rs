@@ -230,7 +230,7 @@ mod tests {
                 "name": "VALID_TO",
                 "ref_code": "VALID_TO",
                 "value": {
-                    "Date": "2017-09-01 00:01:00"
+                    "Date": "01.09.2017"
                 }
             },{
                 "name": "READ_ONLY",
@@ -248,7 +248,7 @@ mod tests {
 
         let mut column_data: HashMap<&str, Vec<ColumnValue>> = HashMap::new();
         column_data.insert("data", values);
-        assert_eq!(handlebars.render("testing", &column_data).unwrap(), "2017-09-01 00:01:00");
+        assert_eq!(handlebars.render("testing", &column_data).unwrap(), "01.09.2017");
     }
 
 }

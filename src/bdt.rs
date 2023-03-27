@@ -1,10 +1,10 @@
-use chrono::{DateTime, Utc};
+use chrono::{NaiveDate};
 use serde::{Serialize};
 
 pub mod column_type;
 pub mod column_value;
 
-use crate::en_date_format;
+use crate::format::lv_date_format;
 
 pub use column_value::RowValues;
 
@@ -60,10 +60,10 @@ pub struct Bdt {
     pub skip: String,
     pub ic: String,
     pub names: Vec<TableName>,
-    #[serde(with = "en_date_format")]
-    pub valid_from: Option<DateTime<Utc>>,
-    #[serde(with = "en_date_format")]
-    pub valid_to: Option<DateTime<Utc>>,
+    #[serde(with = "lv_date_format")]
+    pub valid_from: Option<NaiveDate>,
+    #[serde(with = "lv_date_format")]
+    pub valid_to: Option<NaiveDate>,
     pub columns: Vec<Column>,
     pub data: Vec<RowValues>,
 }

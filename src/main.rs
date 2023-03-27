@@ -3,7 +3,7 @@ use std::error::Error;
 mod csv_adapter;
 mod json_adapter;
 mod bdt;
-mod en_date_format;
+mod format;
 mod sql_adapter;
 
 use crate::csv_adapter::CsvAdapter;
