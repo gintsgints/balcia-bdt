@@ -1,12 +1,13 @@
-use chrono::{NaiveDate};
-use serde::{Serialize};
+use std::str::FromStr;
 
-pub mod column_type;
-pub mod column_value;
+use chrono::NaiveDate;
+pub use column_value::RowValues;
+use serde::Serialize;
 
 use crate::format::lv_date_format;
 
-pub use column_value::RowValues;
+pub mod column_type;
+pub mod column_value;
 
 #[allow(dead_code)]
 #[derive(Debug, Serialize)]
@@ -15,6 +16,20 @@ pub enum Language {
     LV,
     PL,
     LT,
+}
+
+impl FromStr for Language {
+    type Err = ();
+
+    fn from_str(input: &str) -> Result<Language, Self::Err> {
+        match input {
+            "EN" => Ok(Language::EN),
+            "LV" => Ok(Language::LV),
+            "PL" => Ok(Language::PL),
+            "LT" => Ok(Language::LT),
+            _ => Err(()),
+        }
+    }
 }
 
 #[allow(dead_code)]
