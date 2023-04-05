@@ -79,27 +79,47 @@ pub fn read_oracle(table_ic: &str) -> sibyl::Result<Vec<Bdt>> {
         session.business_table_data(table_ic, |row| {
             let valid_from: Option<oracle::Date> = row.get("VALID_FROM")?;
             let valid_to: Option<oracle::Date> = row.get("VALID_TO")?;
+            let cdf1: Option<String> = row.get("CDF1_IC")?;
+            let cdf2: Option<String> = row.get("CDF2_IC")?;
+            let cdf3: Option<String> = row.get("CDF3_IC")?;
+            let cdf4: Option<String> = row.get("CDF4_IC")?;
+            let cdf5: Option<String> = row.get("CDF5_IC")?;
+            let cdf6: Option<String> = row.get("CDF6_IC")?;
+            let cdf7: Option<String> = row.get("CDF7_IC")?;
+            let cdf8: Option<String> = row.get("CDF8_IC")?;
+            let cdf9: Option<String> = row.get("CDF9_IC")?;
+            let cdf10: Option<String> = row.get("CDF10_IC")?;
+            let cdf11: Option<String> = row.get("CDF11_IC")?;
+            let cdf12: Option<String> = row.get("CDF12_IC")?;
+            let cdf13: Option<String> = row.get("CDF13_IC")?;
+            let cdf14: Option<String> = row.get("CDF14_IC")?;
+            let cdf15: Option<String> = row.get("CDF15_IC")?;
+            let text1: Option<String> = row.get("TEXT1")?;
+            let text2: Option<String> = row.get("TEXT2")?;
+            let text3: Option<String> = row.get("TEXT3")?;
+            let text4: Option<String> = row.get("TEXT4")?;
+            let text5: Option<String> = row.get("TEXT5")?;
             let row = DataRow {
                 skip: "".to_string(),
                 id: row.get("ID")?,
                 table_type: bdt.ic.clone(),
                 valid_from: to_naive_date(valid_from),
                 valid_to: to_naive_date(valid_to),
-                cdf1: row.get("CDF1_IC")?,
-                cdf2: row.get("CDF2_IC")?,
-                cdf3: row.get("CDF3_IC")?,
-                cdf4: row.get("CDF4_IC")?,
-                cdf5: row.get("CDF5_IC")?,
-                cdf6: row.get("CDF6_IC")?,
-                cdf7: row.get("CDF7_IC")?,
-                cdf8: row.get("CDF8_IC")?,
-                cdf9: row.get("CDF9_IC")?,
-                cdf10: row.get("CDF10_IC")?,
-                cdf11: row.get("CDF11_IC")?,
-                cdf12: row.get("CDF12_IC")?,
-                cdf13: row.get("CDF13_IC")?,
-                cdf14: row.get("CDF14_IC")?,
-                cdf15: row.get("CDF15_IC")?,
+                cdf1: cdf1.unwrap_or_default(),
+                cdf2: cdf2.unwrap_or_default(),
+                cdf3: cdf3.unwrap_or_default(),
+                cdf4: cdf4.unwrap_or_default(),
+                cdf5: cdf5.unwrap_or_default(),
+                cdf6: cdf6.unwrap_or_default(),
+                cdf7: cdf7.unwrap_or_default(),
+                cdf8: cdf8.unwrap_or_default(),
+                cdf9: cdf9.unwrap_or_default(),
+                cdf10: cdf10.unwrap_or_default(),
+                cdf11: cdf11.unwrap_or_default(),
+                cdf12: cdf12.unwrap_or_default(),
+                cdf13: cdf13.unwrap_or_default(),
+                cdf14: cdf14.unwrap_or_default(),
+                cdf15: cdf15.unwrap_or_default(),
                 num1: row.get("NUM1")?,
                 num2: row.get("NUM2")?,
                 num3: row.get("NUM3")?,
@@ -110,11 +130,11 @@ pub fn read_oracle(table_ic: &str) -> sibyl::Result<Vec<Bdt>> {
                 num8: row.get("NUM8")?,
                 num9: row.get("NUM9")?,
                 num10: row.get("NUM10")?,
-                text1: row.get("TEXT1")?,
-                text2: row.get("TEXT2")?,
-                text3: row.get("TEXT3")?,
-                text4: row.get("TEXT4")?,
-                text5: row.get("TEXT5")?,
+                text1: text1.unwrap_or_default(),
+                text2: text2.unwrap_or_default(),
+                text3: text3.unwrap_or_default(),
+                text4: text4.unwrap_or_default(),
+                text5: text5.unwrap_or_default(),
             };
             let row_values = RowValues::from_data_row(&bdt.columns, row);
             bdt.data.push(row_values);
