@@ -1,3 +1,5 @@
 /target
 .DS_Store
 data/.DS_Store
+.idea
+data/**/bdt.json
