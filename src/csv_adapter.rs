@@ -1,17 +1,17 @@
 #![allow(dead_code)]
 
-use std::fs::File;
-use std::error::Error;
 use regex::Regex;
+use std::error::Error;
+use std::fs::File;
 
-use chrono::{NaiveDate};
+use chrono::NaiveDate;
+use csv::{DeserializeRecordsIntoIter, ReaderBuilder};
 use serde::{Deserialize, Serialize};
-use csv::{ReaderBuilder, DeserializeRecordsIntoIter};
 
-use crate::bdt::*;
 use crate::bdt::column_type::ColumnType;
-use crate::bdt::column_value::{ColumnValue, ColumnValueType};
 use crate::bdt::column_value::RowValues;
+use crate::bdt::column_value::{ColumnValue, ColumnValueType};
+use crate::bdt::*;
 use crate::format::lv_date_format;
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -54,27 +54,11 @@ pub struct ColumnRow {
 
 impl ColumnRow {
     fn to_column_type(&self) -> ColumnType {
-        let re_fromto = Regex::new(r"VALID_(FROM|TO)").unwrap();
-        let re_num = Regex::new(r"NUM[[:digit:]]+").unwrap();
-        let re_text = Regex::new(r"TEXT[[:digit:]]+").unwrap();
-        let re_cdf = Regex::new(r"CDF[[:digit:]]+_ID").unwrap();
-
-        match re_fromto.find(self.ref_code.as_str()) {
-            Some(_) => ColumnType::Date,
-            None => match re_num.find(self.ref_code.as_str()) {
-                Some(_) => ColumnType::Num,
-                None => match re_text.find(self.ref_code.as_str()) {
-                    Some(_) => ColumnType::Text,
-                    None => match re_cdf.find(self.ref_code.as_str()) {
-                        Some(_) => ColumnType::Cdf {
-                            codificator_id: self.adm_codificator_id.clone(),
-                            select_params: self.select_params.clone(),
-                        },
-                        None => panic!("Wrong match for {}", self.ref_code.as_str())
-                    },
-                },
-            },
-        }
+        ColumnType::from_data_row(
+            self.ref_code.as_str(),
+            self.adm_codificator_id.clone(),
+            self.select_params.clone(),
+        )
     }
 
     fn to_column(&self) -> Column {
@@ -133,191 +117,8 @@ pub struct DataRow {
     pub text5: String,
 }
 
-impl DataRow {
-    fn check_and_add_date_field(&self, columns: &Vec<Column>, ref_code: &str, date: Option<NaiveDate>) -> Option<ColumnValue> {
-        if date.is_some() {
-            let find_col = columns.into_iter().find(|col| col.ref_code == ref_code);
-            let column_value = match find_col {
-                Some(value) => { ColumnValue::new(value.name.clone(), value.ref_code.clone(), ColumnValueType::Date(date)) }
-                None => panic!("CSV has data for tables {} undefined column {}", self.table_type, ref_code)                
-            };
-            return Some(column_value);
-        }
-        return None;
-    }
-
-    fn check_and_add_num_field(&self, columns: &Vec<Column>, ref_code: &str, num: Option<f64>) -> Option<ColumnValue> {
-        if num.is_some() {
-            let find_col = columns.into_iter().find(|col| col.ref_code == ref_code);
-            let column_value = match find_col {
-                Some(value) => { ColumnValue::new(value.name.clone(), value.ref_code.clone(), ColumnValueType::Num(num)) }
-                None => panic!("CSV has data for tables {} undefined column {}", self.table_type, ref_code)                
-            };
-            return Some(column_value);
-        }
-        return None;
-    }
-
-    fn check_and_add_text_field(&self, columns: &Vec<Column>, ref_code: &str, str_data: String) -> Option<ColumnValue> {
-        if str_data != "" {
-            let find_col = columns.into_iter().find(|col| col.ref_code == ref_code);
-            let column_value = match find_col {
-                Some(value) => { ColumnValue::new(value.name.clone(), value.ref_code.clone(), ColumnValueType::Text(str_data)) }
-                None => panic!("CSV has data for tables {} undefined column {}", self.table_type, ref_code)                
-            };
-            return Some(column_value);
-        }
-        return None;
-    }
-
-    fn check_and_add_cdf_field(&self, columns: &Vec<Column>, ref_code: &str, str_data: String) -> Option<ColumnValue> {
-        if str_data != "" {
-            let find_col = columns.into_iter().find(|col| col.ref_code == ref_code);
-            let column_value = match find_col {
-                Some(value) => { ColumnValue::new(value.name.clone(), value.ref_code.clone(), ColumnValueType::Cdf(str_data)) }
-                None => panic!("CSV has data for tables {} undefined column {}", self.table_type, ref_code)                
-            };
-            return Some(column_value);
-        }
-        return None;
-    }
-
-    fn to_column_value(&self, columns: &Vec<Column>) -> RowValues {
-        let mut values = RowValues::new();
-        match self.check_and_add_date_field(columns, "VALID_FROM", self.valid_from) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        };
-        match self.check_and_add_date_field(columns, "VALID_TO", self.valid_from) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        };
-        match self.check_and_add_num_field(columns, "NUM1", self.num1) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_num_field(columns, "NUM2", self.num2) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_num_field(columns, "NUM3", self.num3) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_num_field(columns, "NUM4", self.num4) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_num_field(columns, "NUM5", self.num5) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_num_field(columns, "NUM6", self.num6) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_num_field(columns, "NUM7", self.num7) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_num_field(columns, "NUM8", self.num8) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_num_field(columns, "NUM9", self.num9) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_num_field(columns, "NUM10", self.num10) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_text_field(columns, "TEXT1", self.text1.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_text_field(columns, "TEXT2", self.text2.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_text_field(columns, "TEXT3", self.text3.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_text_field(columns, "TEXT4", self.text4.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_text_field(columns, "TEXT5", self.text5.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_cdf_field(columns, "CDF1_ID", self.cdf1.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_cdf_field(columns, "CDF2_ID", self.cdf2.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_cdf_field(columns, "CDF3_ID", self.cdf3.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_cdf_field(columns, "CDF4_ID", self.cdf4.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_cdf_field(columns, "CDF5_ID", self.cdf5.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_cdf_field(columns, "CDF6_ID", self.cdf6.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_cdf_field(columns, "CDF7_ID", self.cdf7.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_cdf_field(columns, "CDF8_ID", self.cdf8.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_cdf_field(columns, "CDF9_ID", self.cdf9.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_cdf_field(columns, "CDF10_ID", self.cdf10.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_cdf_field(columns, "CDF11_ID", self.cdf11.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_cdf_field(columns, "CDF12_ID", self.cdf12.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_cdf_field(columns, "CDF13_ID", self.cdf13.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_cdf_field(columns, "CDF14_ID", self.cdf14.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        match self.check_and_add_cdf_field(columns, "CDF15_ID", self.cdf15.clone()) {
-            Some(column_value) => values.push(column_value),
-            None => {}
-        }
-        return values;
-    }
-}
-
 pub struct CsvReader<T> {
-    inner: DeserializeRecordsIntoIter<File, T>
+    inner: DeserializeRecordsIntoIter<File, T>,
 }
 
 impl<T> CsvReader<T> {
@@ -330,19 +131,18 @@ impl<T> CsvReader<T> {
             .delimiter(b',')
             .from_path(path)?;
         Ok(CsvReader {
-            inner: rdr.into_deserialize()
+            inner: rdr.into_deserialize(),
         })
-    } 
+    }
 }
 
 impl<T> Iterator for CsvReader<T>
 where
-  T: for<'a> Deserialize<'a>,
+    T: for<'a> Deserialize<'a>,
 {
     type Item = T;
 
-    fn next(&mut self) -> Option<Self::Item>
-    {
+    fn next(&mut self) -> Option<Self::Item> {
         loop {
             match self.inner.next() {
                 Some(v) => match v {
@@ -354,7 +154,7 @@ where
                 None => return None,
             }
         }
-    }    
+    }
 }
 
 pub struct CsvAdapter {
@@ -364,7 +164,8 @@ pub struct CsvAdapter {
 
 impl CsvAdapter {
     pub fn new(path: String) -> CsvAdapter {
-        let inner = CsvReader::<TableRow>::new(String::from(path.clone() + "/tables.csv")).expect("Error reading table csv");
+        let inner = CsvReader::<TableRow>::new(String::from(path.clone() + "/tables.csv"))
+            .expect("Error reading table csv");
         CsvAdapter { path, inner }
     }
 }
@@ -373,7 +174,7 @@ impl Iterator for CsvAdapter {
     type Item = Bdt;
 
     fn next(&mut self) -> Option<Self::Item> {
-         loop {
+        loop {
             match self.inner.next() {
                 Some(row) => {
                     let mut bdt = Bdt {
@@ -383,7 +184,7 @@ impl Iterator for CsvAdapter {
                         valid_from: row.valid_from,
                         valid_to: row.valid_to,
                         columns: Vec::new(),
-                        data: Vec::new()
+                        data: Vec::new(),
                     };
 
                     let en_name = TableName::new(
@@ -401,20 +202,25 @@ impl Iterator for CsvAdapter {
                     );
                     bdt.names.push(lv_name);
 
-                    let columns = CsvReader::<ColumnRow>::new(String::from(self.path.clone() + "/columns.csv")).expect("Error reading column csv");
+                    let columns = CsvReader::<ColumnRow>::new(String::from(
+                        self.path.clone() + "/columns.csv",
+                    ))
+                    .expect("Error reading column csv");
                     for row in columns.filter(|col_row| col_row.table_type_id == bdt.ic) {
                         let col = row.to_column();
                         bdt.columns.push(col);
                     }
 
-                    let data = CsvReader::<DataRow>::new(String::from(self.path.clone() + "/data.csv")).expect("Error reading data csv");
+                    let data =
+                        CsvReader::<DataRow>::new(String::from(self.path.clone() + "/data.csv"))
+                            .expect("Error reading data csv");
                     for row in data.filter(|data_row| data_row.table_type == bdt.ic) {
-                        let data_row = row.to_column_value(&bdt.columns);
+                        let data_row = RowValues::from_data_row(&bdt.columns, row);
                         bdt.data.push(data_row);
                     }
 
-                    return Some(bdt)
-                },
+                    return Some(bdt);
+                }
                 None => return None,
             }
         }
@@ -427,7 +233,8 @@ mod tests {
 
     #[test]
     fn read_table_csv() {
-        let iter = CsvReader::<TableRow>::new(String::from("./data/TT/tables.csv")).expect("Error reading csv");
+        let iter = CsvReader::<TableRow>::new(String::from("./data/TT/tables.csv"))
+            .expect("Error reading csv");
         let v: Vec<_> = iter.collect();
         assert_eq!(v.len(), 5);
         assert!(v.get(0).unwrap().valid_to.is_none());
@@ -436,15 +243,20 @@ mod tests {
 
     #[test]
     fn read_table_with_skip_csv() {
-        let iter = CsvReader::<TableRow>::new(String::from("./data/TT/tables.csv")).expect("Error reading csv");
-        let v: Vec<_> = iter.filter(|row|row.skip == String::from("")).collect();
+        let iter = CsvReader::<TableRow>::new(String::from("./data/TT/tables.csv"))
+            .expect("Error reading csv");
+        let v: Vec<_> = iter.filter(|row| row.skip == String::from("")).collect();
         assert_eq!(v.len(), 3);
-        assert_eq!(v.get(0).unwrap().ic, String::from("TT01_POWER_FACTOR_DEFAULT_SEARCH_CONFIG"));
+        assert_eq!(
+            v.get(0).unwrap().ic,
+            String::from("TT01_POWER_FACTOR_DEFAULT_SEARCH_CONFIG")
+        );
     }
 
     #[test]
     fn read_column_csv() {
-        let iter = CsvReader::<ColumnRow>::new(String::from("./data/TT/columns.csv")).expect("Error reading csv");
+        let iter = CsvReader::<ColumnRow>::new(String::from("./data/TT/columns.csv"))
+            .expect("Error reading csv");
         let v: Vec<_> = iter.collect();
         assert_eq!(v.len(), 23);
         assert_eq!(v.get(0).unwrap().table_type_id.as_str(), "TT_CONFIG");
@@ -452,7 +264,8 @@ mod tests {
 
     #[test]
     fn read_data_csv() {
-        let iter = CsvReader::<DataRow>::new(String::from("./data/TT/data.csv")).expect("Error reading csv");
+        let iter = CsvReader::<DataRow>::new(String::from("./data/TT/data.csv"))
+            .expect("Error reading csv");
         let v: Vec<_> = iter.collect();
         assert_eq!(v.len(), 27);
         assert_eq!(v.get(0).unwrap().table_type.as_str(), "TT_CONFIG");
@@ -460,7 +273,8 @@ mod tests {
 
     #[test]
     fn read_error_data_csv() {
-        let iter = CsvReader::<DataRow>::new(String::from("./data/TT/data_error.csv")).expect("Error reading csv");
+        let iter = CsvReader::<DataRow>::new(String::from("./data/TT/data_error.csv"))
+            .expect("Error reading csv");
         let v: Vec<_> = iter.collect();
         assert_eq!(v.len(), 2);
         assert_eq!(v.get(0).unwrap().table_type.as_str(), "TT_CONFIG");
@@ -469,11 +283,13 @@ mod tests {
     #[test]
     #[should_panic]
     fn data_for_nonexistant_column() {
-        let iter_d = CsvReader::<DataRow>::new(String::from("./data/TT/data_extra_data.csv")).expect("Error reading csv");
-        let data: Vec<_> = iter_d.collect();
+        let iter_d = CsvReader::<DataRow>::new(String::from("./data/TT/data_extra_data.csv"))
+            .expect("Error reading csv");
+        let data: Vec<DataRow> = iter_d.collect();
         assert_eq!(data.len(), 1);
 
-        let columns = CsvReader::<ColumnRow>::new(String::from("./data/TT/columns.csv")).expect("Error reading csv");
+        let columns = CsvReader::<ColumnRow>::new(String::from("./data/TT/columns.csv"))
+            .expect("Error reading csv");
         let mut test_columns: Vec<Column> = Vec::new();
         for row in columns {
             if row.table_type_id == data.get(0).unwrap().table_type {
@@ -481,12 +297,13 @@ mod tests {
                 test_columns.push(col);
             }
         }
-        data.get(0).unwrap().to_column_value(&test_columns);
+        RowValues::from_data_row(&test_columns, data.get(0).unwrap());
     }
 
     #[test]
     fn can_iterate_data() {
-        let iter = CsvReader::<DataRow>::new(String::from("./data/TT/data.csv")).expect("Error reading csv");
+        let iter = CsvReader::<DataRow>::new(String::from("./data/TT/data.csv"))
+            .expect("Error reading csv");
         let mut i = 0;
         for _row in iter.into_iter() {
             i += 1;
@@ -512,13 +329,16 @@ mod tests {
         assert_eq!(v.get(0).unwrap().data.len(), 15);
     }
 
-   #[test]
+    #[test]
     fn test_default_is_key() {
         let adapter = CsvAdapter::new(String::from("./data/TT/"));
         let v: Vec<Bdt> = adapter.collect();
         assert_eq!(v.len(), 5);
         assert_eq!(v.get(4).unwrap().columns.len(), 4);
-        assert_eq!(v.get(4).unwrap().ic, "TT02_DEPRECIATION_CONFIG_BY_VEHICLE_AGE");
+        assert_eq!(
+            v.get(4).unwrap().ic,
+            "TT02_DEPRECIATION_CONFIG_BY_VEHICLE_AGE"
+        );
         assert_eq!(v.get(4).unwrap().columns.get(0).unwrap().name, "AGE_FROM");
         assert_eq!(v.get(4).unwrap().columns.get(0).unwrap().is_key, false);
         assert_eq!(v.get(4).unwrap().data.len(), 3);
