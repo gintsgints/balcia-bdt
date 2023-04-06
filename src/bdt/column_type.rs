@@ -1,8 +1,7 @@
 use regex::Regex;
-use serde::Serialize;
-use std::str::FromStr;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum ColumnType {
     Date,
     Text,

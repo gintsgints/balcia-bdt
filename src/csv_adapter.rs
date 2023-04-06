@@ -1,6 +1,5 @@
 #![allow(dead_code)]
 
-use regex::Regex;
 use std::error::Error;
 use std::fs::File;
 
@@ -10,7 +9,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::bdt::column_type::ColumnType;
 use crate::bdt::column_value::RowValues;
-use crate::bdt::column_value::{ColumnValue, ColumnValueType};
 use crate::bdt::*;
 use crate::format::lv_date_format;
 

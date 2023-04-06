@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use chrono::NaiveDate;
 pub use column_value::RowValues;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::format::lv_date_format;
 
@@ -10,7 +10,7 @@ pub mod column_type;
 pub mod column_value;
 
 #[allow(dead_code)]
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum Language {
     EN,
     LV,
@@ -33,7 +33,7 @@ impl FromStr for Language {
 }
 
 #[allow(dead_code)]
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Column {
     pub skip: String,
     pub id: Option<u64>,
@@ -46,7 +46,7 @@ pub struct Column {
     pub options: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct TableName {
     pub lang: Language,
     pub name: String,
@@ -70,7 +70,7 @@ impl TableName {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Bdt {
     pub skip: String,
     pub ic: String,
