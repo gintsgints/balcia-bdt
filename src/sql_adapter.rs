@@ -1,7 +1,7 @@
 use handlebars::{Context, Handlebars, Helper, Output, RenderContext, RenderError};
 use serde::Serialize;
 use std::error::Error;
-use std::fs::File;
+use std::io::stdout;
 
 use crate::Bdt;
 
@@ -24,7 +24,7 @@ fn data_field_helper(
         .ok_or(RenderError::new(
             "Param 1 with field ref string is required for data field helper.",
         ))?;
-    
+
     for value in field_value.iter() {
         let test_code = value["ref_code"].as_str();
         match test_code {
@@ -40,30 +40,26 @@ fn data_field_helper(
                             match v.get("Text") {
                                 Some(vv) => write!(out, "{}", vv.as_str().get_or_insert(""))?,
                                 None => {}
-                            } 
+                            }
                             match v.get("Num") {
-                                Some(vv) => {
-                                    match vv.as_f64() {
-                                        Some(float_val) => write!(out, "{}", float_val)?,
-                                        None => {}
-                                    }
+                                Some(vv) => match vv.as_f64() {
+                                    Some(float_val) => write!(out, "{}", float_val)?,
+                                    None => {}
                                 },
                                 None => {}
-                            } 
+                            }
                             match v.get("Date") {
-                                Some(vv) => {
-                                    match vv.as_str() {
-                                        Some(vv) => write!(out, "{}", vv)?,
-                                        None => {}
-                                    }
+                                Some(vv) => match vv.as_str() {
+                                    Some(vv) => write!(out, "{}", vv)?,
+                                    None => {}
                                 },
                                 None => {}
-                            } 
-                        },
+                            }
+                        }
                         None => {}
                     }
                 }
-            },
+            }
             None => {}
         }
     }
@@ -103,9 +99,12 @@ pub fn write_bdt(tables: Vec<Bdt>) -> Result<(), Box<dyn Error>> {
     handlebars
         .register_template_file("template", "./render/bdtlist.hbs")
         .unwrap();
-    let mut output_file = File::create("data/TT/R__1211_load_agr_table.TT.sql")?;
+    let mut output_file = stdout();
     let bdtlist = BdtList {
-        tables: tables.into_iter().filter(|bdt| !"skip".eq(bdt.skip.as_str())).collect(),
+        tables: tables
+            .into_iter()
+            .filter(|bdt| !"skip".eq(bdt.skip.as_str()))
+            .collect(),
     };
     handlebars.render_to_write("template", &bdtlist, &mut output_file)?;
 
@@ -117,7 +116,7 @@ mod tests {
     use std::collections::HashMap;
 
     use super::*;
-    use crate::bdt::{column_value::ColumnValue};
+    use crate::bdt::column_value::ColumnValue;
 
     fn setup(source: &str) -> Handlebars {
         let mut handlebars = Handlebars::new();
@@ -179,7 +178,7 @@ mod tests {
                 "ref_code": "CDF2_ID",
                 "value": {"Cdf": "Y"}
             }]"#;
-        let values:Vec<ColumnValue> = serde_json::from_str(data_json).unwrap();
+        let values: Vec<ColumnValue> = serde_json::from_str(data_json).unwrap();
 
         let mut handlebars = setup(source);
         handlebars.register_helper("df", Box::new(data_field_helper));
@@ -209,7 +208,7 @@ mod tests {
                 "ref_code": "CDF2_ID",
                 "value": {"Cdf": "Y"}
             }]"#;
-        let values:Vec<ColumnValue> = serde_json::from_str(data_json).unwrap();
+        let values: Vec<ColumnValue> = serde_json::from_str(data_json).unwrap();
 
         let mut handlebars = setup(source);
         handlebars.register_helper("df", Box::new(data_field_helper));
@@ -241,14 +240,16 @@ mod tests {
                 "ref_code": "CDF2_ID",
                 "value": {"Cdf": "Y"}
             }]"#;
-        let values:Vec<ColumnValue> = serde_json::from_str(data_json).unwrap();
+        let values: Vec<ColumnValue> = serde_json::from_str(data_json).unwrap();
 
         let mut handlebars = setup(source);
         handlebars.register_helper("df", Box::new(data_field_helper));
 
         let mut column_data: HashMap<&str, Vec<ColumnValue>> = HashMap::new();
         column_data.insert("data", values);
-        assert_eq!(handlebars.render("testing", &column_data).unwrap(), "01.09.2017");
+        assert_eq!(
+            handlebars.render("testing", &column_data).unwrap(),
+            "01.09.2017"
+        );
     }
-
 }

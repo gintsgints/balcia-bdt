@@ -30,7 +30,7 @@ pub enum Adapter {
     /// Read from oracle DB
     #[cfg(feature = "oracle")]
     Oracle(OracleCommand),
-    /// Write as SQL scripts
+    /// Write business tables from stdin as SQL scripts
     Sql(SqlCommand),
 }
 
