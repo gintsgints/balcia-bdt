@@ -13,5 +13,9 @@ chrono = "0.4.23"
 regex = "1.7.1"
 handlebars = "4.3.6"
 include-oracle-sql = "0.2.2"
-sibyl = { version = "0.6.16", features = ["blocking"] }
+sibyl = { version = "0.6.16", features = ["blocking"], optional = true }
 clap = { version = "4.0", features = ["derive"] }
+
+[features]
+default = ["oracle"]
+oracle = ["dep:sibyl"]

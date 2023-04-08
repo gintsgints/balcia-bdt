@@ -10,6 +10,7 @@ mod bdt;
 mod csv_adapter;
 mod format;
 mod json_adapter;
+#[cfg(feature = "oracle")]
 mod oracle_adapter;
 mod sql_adapter;
 
@@ -27,6 +28,7 @@ pub enum Adapter {
     /// Reads CSV files from dir and outputs JSON to stdout
     Csv(CsvCommand),
     /// Read from oracle DB
+    #[cfg(feature = "oracle")]
     Oracle(OracleCommand),
     /// Write as SQL scripts
     Sql(SqlCommand),
@@ -39,6 +41,10 @@ pub struct CsvCommand {
 }
 
 #[derive(Debug, Args)]
+pub struct CsvReadCommand {}
+
+#[derive(Debug, Args)]
+#[cfg(feature = "oracle")]
 pub struct OracleCommand {
     /// business table IC code
     table_ic_code: String,
@@ -59,6 +65,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             let v: Vec<Bdt> = adapter.collect();
             JsonAdapter::write_bdt(v)?;
         }
+        #[cfg(feature = "oracle")]
         Adapter::Oracle(args) => {
             let v: Vec<Bdt> = oracle_adapter::read_oracle(&args.table_ic_code)?;
             JsonAdapter::write_bdt(v)?;
