@@ -55,7 +55,7 @@ impl RowValues {
         self.values.get(index)
     }
 
-    pub fn from_data_row(columns: &Vec<Column>, row: DataRow) -> RowValues {
+    pub fn from_data_row(columns: &Vec<Column>, row: &DataRow) -> RowValues {
         let mut values = RowValues::new();
         match RowValues::check_and_add_date_field(columns, "VALID_FROM", row.valid_from) {
             Some(column_value) => values.push(column_value),

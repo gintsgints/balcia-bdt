@@ -213,7 +213,7 @@ impl Iterator for CsvAdapter {
                         CsvReader::<DataRow>::new(String::from(self.path.clone() + "/data.csv"))
                             .expect("Error reading data csv");
                     for row in data.filter(|data_row| data_row.table_type == bdt.ic) {
-                        let data_row = RowValues::from_data_row(&bdt.columns, row);
+                        let data_row = RowValues::from_data_row(&bdt.columns, &row);
                         bdt.data.push(data_row);
                     }
 
