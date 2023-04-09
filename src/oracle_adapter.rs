@@ -6,7 +6,7 @@ use std::str::FromStr;
 use crate::bdt::column_type::ColumnType;
 use crate::bdt::column_value::RowValues;
 use crate::bdt::*;
-use crate::csv_adapter::DataRow;
+use crate::csv_adapter::csv_model::DataRow;
 
 include_sql!("sql/bdt.sql");
 
@@ -136,7 +136,7 @@ pub fn read_oracle(table_ic: &str) -> sibyl::Result<Vec<Bdt>> {
                 text4: text4.unwrap_or_default(),
                 text5: text5.unwrap_or_default(),
             };
-            let row_values = RowValues::from_data_row(&bdt.columns, row);
+            let row_values = RowValues::from_data_row(&bdt.columns, &row);
             bdt.data.push(row_values);
             Ok(())
         })?;

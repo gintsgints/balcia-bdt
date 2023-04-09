@@ -2,7 +2,7 @@ use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 
 use crate::bdt::Column;
-use crate::csv_adapter::DataRow;
+use crate::csv_adapter::csv_model::DataRow;
 use crate::format::lv_date_format;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
