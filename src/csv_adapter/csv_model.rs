@@ -5,8 +5,6 @@ use crate::bdt::column_type::ColumnType;
 use crate::bdt::*;
 use crate::format::lv_date_format;
 
-
-
 #[derive(Debug, Deserialize, Serialize)]
 pub struct TableRow {
     pub skip: String,
@@ -46,12 +44,8 @@ pub struct ColumnRow {
 }
 
 impl ColumnRow {
-    pub fn to_column_type(&self) -> ColumnType {
-        ColumnType::from_data_row(
-            self.ref_code.as_str(),
-            self.adm_codificator_id.clone(),
-            self.select_params.clone(),
-        )
+    fn to_column_type(&self) -> ColumnType {
+        ColumnType::from_data_row(self)
     }
 
     pub fn to_column(&self) -> Column {
