@@ -3,9 +3,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::csv_adapter::csv_model::ColumnRow;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub enum ColumnType {
     Date,
+    #[default]
     Text,
     Num,
     Cdf {
@@ -14,8 +15,8 @@ pub enum ColumnType {
     },
 }
 
-impl ColumnType {
-    pub fn from_data_row(row: &ColumnRow) -> ColumnType {
+impl From<&ColumnRow> for ColumnType {
+    fn from(row: &ColumnRow) -> Self {
         let re_fromto = Regex::new(r"VALID_(FROM|TO)").unwrap();
         let re_num = Regex::new(r"NUM[[:digit:]]+").unwrap();
         let re_text = Regex::new(r"TEXT[[:digit:]]+").unwrap();

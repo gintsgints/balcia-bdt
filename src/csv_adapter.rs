@@ -3,16 +3,16 @@
 use std::error::Error;
 use std::fs::File;
 
-use csv::{DeserializeRecordsIntoIter, ReaderBuilder};
-use serde::{Deserialize};
+use csv::{DeserializeRecordsIntoIter, ReaderBuilder, WriterBuilder};
+use serde::{Deserialize, Serialize};
 
-use crate::bdt::column_value::RowValues;
+use crate::bdt::table_name::{Language, TableName};
 use crate::bdt::*;
+use crate::bdt::{column_value::RowValues, table_name::TableNameList};
 
-use self::csv_model::{TableRow, ColumnRow, DataRow};
+use self::csv_model::{ColumnRow, DataRow, TableRow};
 
 pub mod csv_model;
-
 
 pub struct CsvReader<T> {
     inner: DeserializeRecordsIntoIter<File, T>,
@@ -77,7 +77,7 @@ impl Iterator for CsvAdapter {
                     let mut bdt = Bdt {
                         skip: row.skip,
                         ic: row.ic,
-                        names: Vec::new(),
+                        names: TableNameList::new(Vec::new()),
                         valid_from: row.valid_from,
                         valid_to: row.valid_to,
                         columns: Vec::new(),
@@ -121,6 +121,60 @@ impl Iterator for CsvAdapter {
                 None => return None,
             }
         }
+    }
+}
+
+pub struct CsvWriter {}
+
+impl CsvWriter {
+    pub fn new() -> Self {
+        CsvWriter {  }
+    }
+
+    pub fn write_bdt(self, table_list: Vec<Bdt>, path: String) -> Result<(), Box<dyn Error>> {
+        let mut tables:Vec<TableRow> = Vec::new();
+        let mut colums:Vec<ColumnRow> = Vec::new();
+        let mut datas:Vec<DataRow> = Vec::new();
+        for table in table_list {
+            let row = csv_model::TableRow::from(&table);
+            tables.push(row);
+            let mut counter = 0;
+            for column in table.columns {
+                let column_row: ColumnRow = csv_model::ColumnRow::from((&column, table.ic.clone(), counter));
+                counter += 1;
+                colums.push(column_row);
+            }
+            counter = 0;
+            for data in table.data {
+                let data_row = csv_model::DataRow::from((&data, table.ic.clone(), counter));
+                counter += 1;
+                datas.push(data_row);
+            }
+        }
+        
+        let mut table_path_string = path.clone();
+        table_path_string.push_str("/tables.csv");
+        self.write_data(&tables, table_path_string)?;
+
+        let mut columns_path_string = path.clone();
+        columns_path_string.push_str("/columns.csv");
+        self.write_data(&tables, columns_path_string)?;
+
+        let mut data_path_string = path.clone();
+        data_path_string.push_str("/data.csv");
+        self.write_data(&tables, data_path_string)?;
+
+        Ok(())
+    }
+
+    fn write_data<T>(&self, data: &Vec<T>, path: String) -> Result<(), Box<dyn Error>>
+    where T: Serialize {
+        let mut wtr = WriterBuilder::new()
+            .has_headers(true)
+            .delimiter(b',')
+            .from_path(path)?;
+        wtr.serialize(data)?;
+        Ok(())
     }
 }
 

@@ -55,6 +55,62 @@ impl RowValues {
         self.values.get(index)
     }
 
+    pub fn get_by_ref_as_date(&self, column_ref: &str) -> Option<NaiveDate> {
+        let value = self
+            .values
+            .iter()
+            .find(|column_value| column_value.ref_code == column_ref);
+        let mut date_value = None;
+        if let Some(column_value) = value {
+            if let ColumnValueType::Date(date) = column_value.value {
+                date_value = date.clone();
+            }
+        }
+        date_value
+    }
+
+    pub fn get_by_ref_as_num(&self, column_ref: &str) -> Option<f64> {
+        let value = self
+            .values
+            .iter()
+            .find(|column_value| column_value.ref_code == column_ref);
+        let mut num_value = None;
+        if let Some(column_value) = value {
+            if let ColumnValueType::Num(num) = column_value.value {
+                num_value = num;
+            }
+        }
+        num_value
+    }
+
+    pub fn get_by_ref_as_text(&self, column_ref: &str) -> String {
+        let value = self
+            .values
+            .iter()
+            .find(|column_value| column_value.ref_code == column_ref);
+        let mut text_value = "".to_string();
+        if let Some(column_value) = value {
+            if let ColumnValueType::Text(text) = column_value.value.clone() {
+                text_value = text;
+            }
+        }
+        text_value
+    }
+
+    pub fn get_by_ref_as_cdf(&self, column_ref: &str) -> String {
+        let value = self
+            .values
+            .iter()
+            .find(|column_value| column_value.ref_code == column_ref);
+        let mut cdf_value = "".to_string();
+        if let Some(column_value) = value {
+            if let ColumnValueType::Cdf(text) = column_value.value.clone() {
+                cdf_value = text;
+            }
+        }
+        cdf_value
+    }
+
     pub fn from_data_row(columns: &Vec<Column>, row: &DataRow) -> RowValues {
         let mut values = RowValues::new();
         match RowValues::check_and_add_date_field(columns, "VALID_FROM", row.valid_from) {

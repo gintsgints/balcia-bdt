@@ -1,6 +1,7 @@
 use std::error::Error;
 
 use clap::{Args, Parser, Subcommand};
+use csv_adapter::CsvWriter;
 
 use crate::bdt::Bdt;
 use crate::csv_adapter::CsvAdapter;
@@ -25,7 +26,7 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub enum Adapter {
-    /// Reads CSV files from dir and outputs JSON to stdout
+    /// process CSV files
     Csv(CsvCommand),
     /// Read from oracle DB
     #[cfg(feature = "oracle")]
@@ -36,12 +37,29 @@ pub enum Adapter {
 
 #[derive(Debug, Args)]
 pub struct CsvCommand {
+    #[clap(subcommand)]
+    pub subcommand: CsvSubCommand,
+}
+
+#[derive(Debug, Subcommand)]
+pub enum CsvSubCommand {
+    /// Reads CSV files from provided directory and outputs as JSON
+    Read(CsvReadCommand),
+    /// Reads JSON from stdin and Write CSV data to files at provided path
+    Write(CsvWriteCommand),
+}
+
+#[derive(Debug, Args)]
+pub struct CsvReadCommand {
     /// path to csv file directory
     path: String,
 }
 
 #[derive(Debug, Args)]
-pub struct CsvReadCommand {}
+pub struct CsvWriteCommand {
+    /// path to csv file directory
+    path: String,
+}
 
 #[derive(Debug, Args)]
 #[cfg(feature = "oracle")]
@@ -60,11 +78,18 @@ fn main() -> Result<(), Box<dyn Error>> {
     let args = Cli::parse();
 
     match &args.command {
-        Adapter::Csv(args) => {
-            let adapter = CsvAdapter::new(String::from(&args.path));
-            let v: Vec<Bdt> = adapter.collect();
-            JsonAdapter::write_bdt(v)?;
-        }
+        Adapter::Csv(args) => match &args.subcommand {
+            CsvSubCommand::Read(args) => {
+                let adapter = CsvAdapter::new(String::from(&args.path));
+                let v: Vec<Bdt> = adapter.collect();
+                JsonAdapter::write_bdt(v)?;
+            }
+            CsvSubCommand::Write(args) => {
+                let v: Vec<Bdt> = JsonAdapter::read_bdt()?;
+                let writer = CsvWriter::new();
+                writer.write_bdt(v, String::from(&args.path))?;
+            }
+        },
         #[cfg(feature = "oracle")]
         Adapter::Oracle(args) => {
             let v: Vec<Bdt> = oracle_adapter::read_oracle(&args.table_ic_code)?;
