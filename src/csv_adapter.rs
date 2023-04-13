@@ -128,21 +128,43 @@ pub struct CsvWriter {}
 
 impl CsvWriter {
     pub fn new() -> Self {
-        CsvWriter {  }
+        CsvWriter {}
     }
 
-    pub fn write_bdt(self, table_list: Vec<Bdt>, path: String) -> Result<(), Box<dyn Error>> {
-        let mut tables:Vec<TableRow> = Vec::new();
-        let mut colums:Vec<ColumnRow> = Vec::new();
-        let mut datas:Vec<DataRow> = Vec::new();
+    pub fn write_bdt(&self, table_list: Vec<Bdt>, path: String) -> Result<(), Box<dyn Error>> {
+        let (tables, columns, datas) = self.prepeare_data(table_list)?;
+
+        let mut table_path_string = path.clone();
+        table_path_string.push_str("/tables.csv");
+        self.write_data(&tables, table_path_string)?;
+
+        let mut columns_path_string = path.clone();
+        columns_path_string.push_str("/columns.csv");
+        self.write_data(&columns, columns_path_string)?;
+
+        let mut data_path_string = path.clone();
+        data_path_string.push_str("/data.csv");
+        self.write_data(&datas, data_path_string)?;
+
+        Ok(())
+    }
+
+    fn prepeare_data(
+        &self,
+        table_list: Vec<Bdt>,
+    ) -> Result<(Vec<TableRow>, Vec<ColumnRow>, Vec<DataRow>), Box<dyn Error>> {
+        let mut tables: Vec<TableRow> = Vec::new();
+        let mut columns: Vec<ColumnRow> = Vec::new();
+        let mut datas: Vec<DataRow> = Vec::new();
         for table in table_list {
             let row = csv_model::TableRow::from(&table);
             tables.push(row);
             let mut counter = 0;
             for column in table.columns {
-                let column_row: ColumnRow = csv_model::ColumnRow::from((&column, table.ic.clone(), counter));
+                let column_row: ColumnRow =
+                    csv_model::ColumnRow::from((&column, table.ic.clone(), counter));
                 counter += 1;
-                colums.push(column_row);
+                columns.push(column_row);
             }
             counter = 0;
             for data in table.data {
@@ -151,36 +173,42 @@ impl CsvWriter {
                 datas.push(data_row);
             }
         }
-        
-        let mut table_path_string = path.clone();
-        table_path_string.push_str("/tables.csv");
-        self.write_data(&tables, table_path_string)?;
 
-        let mut columns_path_string = path.clone();
-        columns_path_string.push_str("/columns.csv");
-        self.write_data(&tables, columns_path_string)?;
-
-        let mut data_path_string = path.clone();
-        data_path_string.push_str("/data.csv");
-        self.write_data(&tables, data_path_string)?;
-
-        Ok(())
+        Ok((tables, columns, datas))
     }
 
     fn write_data<T>(&self, data: &Vec<T>, path: String) -> Result<(), Box<dyn Error>>
-    where T: Serialize {
+    where
+        T: Serialize,
+    {
         let mut wtr = WriterBuilder::new()
             .has_headers(true)
             .delimiter(b',')
             .from_path(path)?;
-        wtr.serialize(data)?;
+        for record in data {
+            wtr.serialize(record)?;
+        }
+        wtr.flush()?;
         Ok(())
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::json_adapter::JsonAdapter;
+
     use super::*;
+
+    #[test]
+    fn test_prepeare_data() -> Result<(), Box<dyn Error>> {
+        let v: Vec<Bdt> = JsonAdapter::read_bdt_from_file("./data/TT/TT.json")?;
+        let wrtr = CsvWriter::new();
+        let (tables, columns, datas) = CsvWriter::prepeare_data(&wrtr, v)?;
+        assert_eq!(tables.len(), 5);
+        assert_eq!(columns.len(), 23);
+        assert_eq!(datas.len(), 27);
+        Ok(())
+    }
 
     #[test]
     fn read_table_csv() {

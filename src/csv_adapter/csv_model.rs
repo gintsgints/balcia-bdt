@@ -130,7 +130,7 @@ impl From<(&Column, String, u16)> for ColumnRow {
             col_name: value.0.name.clone(),
             ref_code: value.0.ref_code.clone(),
             adm_codificator_id,
-            sequence: Some(value.2),
+            sequence: Some(value.2 + 1),
             is_key,
             options: value.0.options.clone(),
             select_params,
