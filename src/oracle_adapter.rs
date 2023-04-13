@@ -1,12 +1,14 @@
+use std::str::FromStr;
+
 use chrono::NaiveDate;
 use include_oracle_sql::{impl_sql, include_sql};
 use sibyl as oracle;
-use std::str::FromStr;
 
 use crate::bdt::column_type::ColumnType;
 use crate::bdt::column_value::RowValues;
+use crate::bdt::table_name::{Language, TableName, TableNameList};
 use crate::bdt::*;
-use crate::csv_adapter::csv_model::DataRow;
+use crate::csv_adapter::csv_model::{ColumnRow, DataRow};
 
 include_sql!("sql/bdt.sql");
 
@@ -34,7 +36,7 @@ pub fn read_oracle(table_ic: &str) -> sibyl::Result<Vec<Bdt>> {
         let mut bdt = Bdt {
             skip: "".to_string(),
             ic: ic.to_string(),
-            names: Vec::new(),
+            names: TableNameList::new(Vec::new()),
             valid_from: to_naive_date(valid_from),
             valid_to: to_naive_date(valid_to),
             columns: Vec::new(),
@@ -63,12 +65,20 @@ pub fn read_oracle(table_ic: &str) -> sibyl::Result<Vec<Bdt>> {
                 name: row.get("COL_NAME")?,
                 title: row.get("TITLE")?,
                 ref_code: row.get("REF_CODE")?,
-                col_type: ColumnType::from_data_row(
-                    row.get("REF_CODE")?,
-                    cdf_ic.unwrap_or_default(),
-                    select_params.unwrap_or_default(),
-                ),
                 sequence: row.get("SEQUENCE")?,
+                col_type: ColumnType::from(&ColumnRow {
+                    skip: "".to_string(),
+                    id: None,
+                    table_type_id: "".to_string(),
+                    title: "".to_string(),
+                    col_name: "".to_string(),
+                    ref_code: row.get("REF_CODE")?,
+                    adm_codificator_id: cdf_ic.unwrap_or_default(),
+                    sequence: None,
+                    is_key: "".to_string(),
+                    options: "".to_string(),
+                    select_params: select_params.unwrap_or_default(),
+                }),
                 is_key: "Y".eq(is_key_str),
                 options: options.unwrap_or_default(),
             };
