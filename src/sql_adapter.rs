@@ -1,7 +1,8 @@
-use handlebars::{Context, Handlebars, Helper, Output, RenderContext, RenderError};
-use serde::Serialize;
 use std::error::Error;
 use std::io::stdout;
+
+use handlebars::{Context, Handlebars, Helper, Output, RenderContext, RenderError};
+use serde::Serialize;
 
 use crate::Bdt;
 
@@ -115,8 +116,9 @@ pub fn write_bdt(tables: Vec<Bdt>) -> Result<(), Box<dyn Error>> {
 mod tests {
     use std::collections::HashMap;
 
-    use super::*;
     use crate::bdt::column_value::ColumnValue;
+
+    use super::*;
 
     fn setup(source: &str) -> Handlebars {
         let mut handlebars = Handlebars::new();

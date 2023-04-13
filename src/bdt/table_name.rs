@@ -1,5 +1,6 @@
+use std::str::FromStr;
+
 use serde::{Deserialize, Serialize};
-use std::{str::FromStr};
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
 pub enum Language {
@@ -65,7 +66,8 @@ impl TableNameList {
     }
 
     pub fn get_table_name(&self, lang: Language) -> Option<TableName> {
-        self.names.clone()
+        self.names
+            .clone()
             .into_iter()
             .find(|foundname| foundname.lang == lang)
     }
