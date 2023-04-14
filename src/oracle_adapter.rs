@@ -1,6 +1,7 @@
 use std::str::FromStr;
 
 use chrono::NaiveDate;
+use dotenv::dotenv;
 use include_oracle_sql::{impl_sql, include_sql};
 use sibyl as oracle;
 
@@ -25,7 +26,13 @@ fn to_naive_date(date: Option<oracle::Date>) -> Option<NaiveDate> {
 #[cfg(not(feature = "tokio"))]
 pub fn read_oracle(table_ic: &str) -> sibyl::Result<Vec<Bdt>> {
     let oracle = sibyl::env()?;
-    let session = oracle.connect("localhost/xe", "bta", "bta_234")?;
+
+    dotenv().ok();
+
+    let dbname = std::env::var("DBNAME").expect("database name");
+    let dbuser = std::env::var("DBUSER").expect("user name");
+    let dbpass = std::env::var("DBPASS").expect("password");
+    let session = oracle.connect(&dbname, &dbuser, &dbpass)?;
 
     let mut bdt_list: Vec<Bdt> = Vec::new();
 

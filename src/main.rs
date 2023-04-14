@@ -28,7 +28,9 @@ pub struct Cli {
 pub enum Adapter {
     /// process CSV files
     Csv(CsvCommand),
-    /// Read from oracle DB
+    /// Read from oracle DB (Appropriate environment variables should be set for
+    /// DBNAME - database name example: localhost/xe
+    /// DBUSER and DBPASS
     #[cfg(feature = "oracle")]
     Oracle(OracleCommand),
     /// Write business tables from stdin as SQL scripts

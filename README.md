@@ -21,9 +21,12 @@ or for specific command:
 balcia-bdt-v2.exe sql --help
 ```
 
-So to convert specific BDT from oracle database to SQL scripts, one would use next command:
+So to convert specific BDT from oracle database to SQL scripts, one would use next command
+(make sure you set oracle connection environment variables before)
+:
 
 ```shell script
+balcia-bdt-v2.exe oracle --help
 balcia-bdt-v2.exe oracle AL01_PACKAGE_DEALS | balcia-bdt-v2.exe sql AL01_PACKAGE_DEALS
 ```
 

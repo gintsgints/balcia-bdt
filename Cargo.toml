@@ -15,6 +15,7 @@ handlebars = "4.3.6"
 include-oracle-sql = "0.2.2"
 sibyl = { version = "0.6.16", features = ["blocking"], optional = true }
 clap = { version = "4.0", features = ["derive"] }
+dotenv = "0.15.0"
 
 [features]
 default = ["oracle"]
