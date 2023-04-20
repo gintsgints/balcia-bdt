@@ -1,3 +1,12 @@
+mod bdt;
+mod csv_adapter;
+mod format;
+mod json_adapter;
+#[cfg(feature = "oracle")]
+mod oracle_adapter;
+mod sql_adapter;
+mod sqlite_adapter;
+
 use std::error::Error;
 
 use clap::{Args, Parser, Subcommand};
@@ -6,14 +15,7 @@ use csv_adapter::CsvWriter;
 use crate::bdt::Bdt;
 use crate::csv_adapter::CsvAdapter;
 use crate::json_adapter::JsonAdapter;
-
-mod bdt;
-mod csv_adapter;
-mod format;
-mod json_adapter;
-#[cfg(feature = "oracle")]
-mod oracle_adapter;
-mod sql_adapter;
+use crate::sqlite_adapter::SqliteAdapter;
 
 /// Convert BDT from one format to other
 #[derive(Parser, Debug)]
@@ -35,6 +37,8 @@ pub enum Adapter {
     Oracle(OracleCommand),
     /// Write business tables from stdin as SQL scripts
     Sql(SqlCommand),
+    /// Write to stdout sqlite load script from stdin JSON bdt
+    Sqlite(SqliteCommand),
 }
 
 #[derive(Debug, Args)]
@@ -71,6 +75,9 @@ pub struct OracleCommand {
 }
 
 #[derive(Debug, Args)]
+pub struct SqliteCommand {}
+
+#[derive(Debug, Args)]
 pub struct SqlCommand {
     /// business table IC code
     table_ic_code: String,
@@ -96,6 +103,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         Adapter::Oracle(args) => {
             let v: Vec<Bdt> = oracle_adapter::read_oracle(&args.table_ic_code)?;
             JsonAdapter::write_bdt(v)?;
+        }
+        Adapter::Sqlite(_args) => {
+            let v: Vec<Bdt> = JsonAdapter::read_bdt_from_file("./data/TT/TT.json")?;
+            SqliteAdapter::write_bdt(v)?;
         }
         Adapter::Sql(_args) => {
             let v: Vec<Bdt> = JsonAdapter::read_bdt()?;
