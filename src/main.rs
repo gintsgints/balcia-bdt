@@ -1,12 +1,3 @@
-mod bdt;
-mod csv_adapter;
-mod format;
-mod json_adapter;
-#[cfg(feature = "oracle")]
-mod oracle_adapter;
-mod sql_adapter;
-mod sqlite_adapter;
-
 use std::error::Error;
 
 use clap::{Args, Parser, Subcommand};
@@ -14,8 +5,19 @@ use csv_adapter::CsvWriter;
 
 use crate::bdt::Bdt;
 use crate::csv_adapter::CsvAdapter;
+use crate::csv_data_adapter::CsvDataAdapter;
 use crate::json_adapter::JsonAdapter;
 use crate::sqlite_adapter::SqliteAdapter;
+
+mod bdt;
+mod csv_adapter;
+mod csv_data_adapter;
+mod format;
+mod json_adapter;
+#[cfg(feature = "oracle")]
+mod oracle_adapter;
+mod sql_adapter;
+mod sqlite_adapter;
 
 /// Convert BDT from one format to other
 #[derive(Parser, Debug)]
@@ -53,6 +55,8 @@ pub enum CsvSubCommand {
     Read(CsvReadCommand),
     /// Reads JSON from stdin and Write CSV data to files at provided path
     Write(CsvWriteCommand),
+    /// Write csv data for only defined columns. This also skip header at top.
+    Data(CsvDataCommand),
 }
 
 #[derive(Debug, Args)]
@@ -66,6 +70,9 @@ pub struct CsvWriteCommand {
     /// path to csv file directory
     path: String,
 }
+
+#[derive(Debug, Args)]
+pub struct CsvDataCommand {}
 
 #[derive(Debug, Args)]
 #[cfg(feature = "oracle")]
@@ -98,6 +105,15 @@ fn main() -> Result<(), Box<dyn Error>> {
                 let writer = CsvWriter::new();
                 writer.write_bdt(v, String::from(&args.path))?;
             }
+            CsvSubCommand::Data(_args) => {
+                let v = JsonAdapter::read_bdt()?;
+                if v.len() != 1 {
+                    panic!("CSV data could be done for one only BDT.")
+                }
+                for bdt in v {
+                    CsvDataAdapter::write_bdt(bdt)?;
+                }
+            }
         },
         #[cfg(feature = "oracle")]
         Adapter::Oracle(args) => {
@@ -105,7 +121,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             JsonAdapter::write_bdt(v)?;
         }
         Adapter::Sqlite(_args) => {
-            let v: Vec<Bdt> = JsonAdapter::read_bdt_from_file("./data/TT/TT.json")?;
+            let v: Vec<Bdt> = JsonAdapter::read_bdt()?;
             SqliteAdapter::write_bdt(v)?;
         }
         Adapter::Sql(_args) => {
