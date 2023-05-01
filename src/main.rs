@@ -125,7 +125,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             JsonAdapter::write_bdt(v)?;
         }
         Adapter::Sqlite(_args) => {
-            let v: Vec<Bdt> = JsonAdapter::read_bdt_from_file("./data/TT/TT.json")?;
+            let v: Vec<Bdt> = JsonAdapter::read_bdt()?;
             SqliteAdapter::write_bdt(v)?;
         }
         Adapter::Sql(_args) => {
