@@ -1,12 +1,12 @@
 mod bdt;
 mod csv_adapter;
+mod csv_data_adapter;
 mod format;
 mod json_adapter;
 #[cfg(feature = "oracle")]
 mod oracle_adapter;
 mod sql_adapter;
 mod sqlite_adapter;
-mod csv_data_adapter;
 
 use std::error::Error;
 
@@ -55,7 +55,7 @@ pub enum CsvSubCommand {
     /// Reads JSON from stdin and Write CSV data to files at provided path
     Write(CsvWriteCommand),
     /// Write BDT to CSV in form of exported data
-    Data(CsvDataCommand)
+    Data(CsvDataCommand),
 }
 
 #[derive(Debug, Args)]
@@ -110,9 +110,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                 writer.write_bdt(v, String::from(&args.path))?;
             }
             CsvSubCommand::Data(args) => {
-                let v: Vec<Bdt> = JsonAdapter::read_bdt_from_file("./data/TT/TT.json")?;
+                let v: Vec<Bdt> = JsonAdapter::read_bdt()?;
 
-                if let Some(bdt) =  v.into_iter().find(|bdt| bdt.ic == args.table) {
+                if let Some(bdt) = v.into_iter().find(|bdt| bdt.ic == args.table) {
                     csv_data_adapter::write_csv_data(&args.path, &bdt)?;
                 } else {
                     panic!("Table with name: {} not found.", args.table)
