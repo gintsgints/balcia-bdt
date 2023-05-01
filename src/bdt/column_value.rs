@@ -33,7 +33,7 @@ impl ColumnValue {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RowValues {
-    values: Vec<ColumnValue>,
+    pub values: Vec<ColumnValue>,
 }
 
 impl RowValues {

@@ -2,7 +2,7 @@ use chrono::{NaiveDate};
 use serde::{self, Deserializer, de, Serializer};
 use std::fmt;
 
-const FORMAT: &'static str = "%d.%m.%Y";
+pub const FORMAT: &'static str = "%d.%m.%Y";
 
 pub fn serialize<S>(some_date: &Option<NaiveDate>, serializer: S) -> Result<S::Ok, S::Error>
 where
