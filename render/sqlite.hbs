@@ -4,4 +4,7 @@ CREATE TABLE {{bdt.ic}} (
     {{column.name}} {{#if (eq column.col_type "Num")}}REAL{{/if}}{{#if (eq column.col_type "Text")}}TEXT{{/if}}{{#if (eq column.col_type "Date")}}TEXT{{/if}}{{some column.col_type.Cdf.codificator_id ~}},
 {{/each}}
 );
+{{#each bdt.columns as |column|}}
+    create index INDEX_{{column.name}} ON {{bdt.ic}} ({{column.name}});
+{{/each}}
 {{/each}}
