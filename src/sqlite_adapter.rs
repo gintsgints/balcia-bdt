@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::io::stdout;
 use serde::Serialize;
-use handlebars::{Context, Handlebars, Helper, Output, RenderContext, RenderError, handlebars_helper};
+use handlebars::{Context, Handlebars, Helper, Output, RenderContext, RenderError};
 
 use crate::Bdt;
 
