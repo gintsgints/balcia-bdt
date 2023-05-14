@@ -1,10 +1,13 @@
 {{#each tables as |bdt|}}
 CREATE TABLE {{bdt.ic}} (
 {{#each bdt.columns as |column|}}
-    {{column.name}} {{#if (eq column.col_type "Num")}}REAL{{/if}}{{#if (eq column.col_type "Text")}}TEXT{{/if}}{{#if (eq column.col_type "Date")}}TEXT{{/if}}{{some column.col_type.Cdf.codificator_id ~}},
+    {{column.name}} {{#if (eq column.col_type "Num")}}REAL{{/if}}{{#if (eq column.col_type "Text")}}TEXT{{/if}}{{#if (eq column.col_type "Date")}}TEXT{{/if}}{{some column.col_type.Cdf.codificator_id ~}}{{last bdt.columns @index ~}}
 {{/each}}
 );
 {{#each bdt.columns as |column|}}
     create index INDEX_{{column.name}} ON {{bdt.ic}} ({{column.name}});
 {{/each}}
+
+.separator ,
+.import --skip 1 ./{{bdt.ic}}.csv {{bdt.ic}}
 {{/each}}
