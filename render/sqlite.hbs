@@ -5,7 +5,7 @@ CREATE TABLE {{bdt.ic}} (
 {{/each}}
 );
 {{#each bdt.columns as |column|}}
-    create index INDEX_{{column.name}} ON {{bdt.ic}} ({{column.name}});
+    create index INDEX_{{bdt.ic}}_{{column.name}} ON {{bdt.ic}} ({{column.name}});
 {{/each}}
 
 .separator ,
