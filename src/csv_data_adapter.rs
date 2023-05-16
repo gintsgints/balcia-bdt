@@ -2,7 +2,9 @@ use std::error::Error;
 
 use csv::WriterBuilder;
 
-use crate::{bdt::{Bdt, column_value::ColumnValueType}, format::lv_date_format::FORMAT};
+use crate::bdt::{column_value::ColumnValueType, Bdt};
+
+const FORMAT: &'static str = "%Y-%m-%d";
 
 pub fn write_csv_data(path: &String, bdt: &Bdt) -> Result<(), Box<dyn Error>> {
     let data = make_data_rows(bdt);
@@ -33,16 +35,16 @@ fn make_rows(bdt: &Bdt, header: Vec<String>) -> Vec<Vec<String>> {
         let mut string_row: Vec<String> = vec![];
         for column in &bdt.columns {
             let mut str_value = "".to_string();
-            for value in & row.values {
+            for value in &row.values {
                 if column.ref_code.eq(&value.ref_code) {
                     match &value.value {
-                        ColumnValueType::Cdf(str_val) => {str_value = str_val.clone()},
-                        ColumnValueType::Text(str_val) => {str_value = str_val.clone()},
+                        ColumnValueType::Cdf(str_val) => str_value = str_val.clone(),
+                        ColumnValueType::Text(str_val) => str_value = str_val.clone(),
                         ColumnValueType::Date(date_opt_val) => {
                             if let Some(date_val) = date_opt_val {
                                 str_value = format!("{}", date_val.clone().format(FORMAT));
                             }
-                        },
+                        }
                         ColumnValueType::Num(num_opt_val) => {
                             if let Some(num_val) = num_opt_val {
                                 str_value = num_val.clone().to_string()
@@ -65,9 +67,10 @@ mod tests {
     use chrono::NaiveDate;
 
     use crate::bdt::{
-        column_type::{ColumnType},
+        column_type::ColumnType,
+        column_value::{ColumnValue, ColumnValueType},
         table_name::TableNameList,
-        Column, RowValues, column_value::{ColumnValue, ColumnValueType},
+        Column, RowValues,
     };
 
     use super::*;
@@ -101,7 +104,10 @@ mod tests {
             name: "CONFIG_TYPE".to_string(),
             title: "".to_string(),
             ref_code: "CDF1_ID".to_string(),
-            col_type: ColumnType::Cdf { codificator_id: "TT_CONFIG_TYPE_ID".to_string(), select_params: "".to_string() },
+            col_type: ColumnType::Cdf {
+                codificator_id: "TT_CONFIG_TYPE_ID".to_string(),
+                select_params: "".to_string(),
+            },
             sequence: Some(1),
             is_key: false,
             options: "".to_string(),
@@ -112,7 +118,10 @@ mod tests {
             name: "ADDITIONAL_COL".to_string(),
             title: "".to_string(),
             ref_code: "CDF2_ID".to_string(),
-            col_type: ColumnType::Cdf { codificator_id: "ADDITIONAL_ID".to_string(), select_params: "".to_string() },
+            col_type: ColumnType::Cdf {
+                codificator_id: "ADDITIONAL_ID".to_string(),
+                select_params: "".to_string(),
+            },
             sequence: Some(1),
             is_key: false,
             options: "".to_string(),
@@ -144,27 +153,27 @@ mod tests {
         row1.push(ColumnValue {
             value: ColumnValueType::Date(NaiveDate::from_ymd_opt(1997, 12, 1)),
             name: "VALID_FROM".to_string(),
-            ref_code: "VALID_FROM".to_string()
+            ref_code: "VALID_FROM".to_string(),
         });
         row1.push(ColumnValue {
             value: ColumnValueType::Date(None),
             name: "VALID_TO".to_string(),
-            ref_code: "VALID_TO".to_string()
+            ref_code: "VALID_TO".to_string(),
         });
         row1.push(ColumnValue {
             value: ColumnValueType::Cdf("BORDER_POLICY_SERIES".to_string()),
             name: "CONFIG_TYPE".to_string(),
-            ref_code: "CDF1_ID".to_string()
+            ref_code: "CDF1_ID".to_string(),
         });
         row1.push(ColumnValue {
             value: ColumnValueType::Text("ANA".to_string()),
             name: "CONFIG_VALUE".to_string(),
-            ref_code: "TEXT1".to_string()
+            ref_code: "TEXT1".to_string(),
         });
         row1.push(ColumnValue {
             value: ColumnValueType::Num(Some(10.0)),
             name: "CONFIG_NUM_VALUE".to_string(),
-            ref_code: "NUM1".to_string()
+            ref_code: "NUM1".to_string(),
         });
 
         Bdt {
@@ -190,7 +199,10 @@ mod tests {
     fn make_row_test() {
         let bdt = create_test_data();
         let csv_row = make_rows(&bdt, vec![]);
-        assert_eq!(csv_row.get(1).unwrap().get(0).unwrap(), &"01.12.1997".to_string());
+        assert_eq!(
+            csv_row.get(1).unwrap().get(0).unwrap(),
+            &"01.12.1997".to_string()
+        );
         assert_eq!(csv_row.get(1).unwrap().len(), 6);
     }
 }
