@@ -91,7 +91,7 @@ pub struct SqliteCommand {}
 #[derive(Debug, Args)]
 pub struct SqlCommand {
     /// business table IC code
-    table_ic_code: String,
+    table_ic_code: Option<String>,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -128,9 +128,17 @@ fn main() -> Result<(), Box<dyn Error>> {
             let v: Vec<Bdt> = JsonAdapter::read_bdt()?;
             SqliteAdapter::write_bdt(v)?;
         }
-        Adapter::Sql(_args) => {
+        Adapter::Sql(args) => {
             let v: Vec<Bdt> = JsonAdapter::read_bdt()?;
-            crate::sql_adapter::write_bdt(v)?;
+            match &args.table_ic_code {
+                Some(table) => {
+                    let filtered: Vec<Bdt> = v.into_iter().filter(|flt| table.eq(&flt.ic)).collect();
+                    crate::sql_adapter::write_bdt(filtered)?;
+                },
+                None => {
+                    crate::sql_adapter::write_bdt(v)?;
+                }
+            }
         }
     }
     Ok(())
