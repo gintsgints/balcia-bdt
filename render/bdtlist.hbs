@@ -7,10 +7,10 @@ exec f.flush_codif_entry_cache();
 
 {{#each tables as |bdt|}}
 
-prompt Loading {{bdt.names.[0].name}}
+prompt Loading {{bdt.names.names.[0].name}}
 begin
     CFGLOAD.STORE_CDF_IC(P_ADM_CODIFICATOR_ID=>f.get_cdf_id('COD','AGC_CUSTOM_TABLE_TYPE')   ,P_ADM_CODIF_ENTRY_ID=>f.get_cdf_id('AGC_CUSTOM_TABLE_TYPE','')   ,P_IC=>'{{bdt.ic}}'   ,P_CODE=>''   ,P_SEQUENCE=>''   ,P_NOTES=>''   ,P_VALID_FROM=>'{{bdt.valid_from}}'   ,P_VALID_TO=>'{{bdt.valid_to}}'   );
-    {{#each bdt.names as |name|}}
+    {{#each bdt.names.names as |name|}}
     cfgload.store_cdflng(f.get_cdf_id('AGC_CUSTOM_TABLE_TYPE','{{bdt.ic}}'),'{{bdt.ic}}','{{name.lang}}','{{name.name}}','{{name.print_name}}','{{name.short_print_name}}');
     {{/each}}
 end;
