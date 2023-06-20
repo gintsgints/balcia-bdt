@@ -36,6 +36,21 @@ or to save specific BDT to CSV execute:
 balcia-bdt-v2.exe oracle AL01_PACKAGE_DEALS | ./target/debug/balcia-bdt-v2 csv write ./data/TEST/
 ```
 
+## Getting BDT from oracle DB and generating oracle load scripts from it
+
+First load BDT from oracle to json
+
+```shell script
+balcia-bdt-v2.exe oracle LT_TRAVEL_INDIVIDUAL_RISK_SUM_INSURED_FACTOR >./data/LT_TRAVEL_INDIVIDUAL_RISK_SUM_INSURED_FACTOR.json
+```
+
+Then Generate load SQL scripts
+
+```shell script
+type ./data/LT_TRAVEL_INDIVIDUAL_RISK_SUM_INSURED_FACTOR.json | balcia-bdt-v2 sql LT_TRAVEL_INDIVIDUAL_RISK_SUM_INSURED_FACTOR
+```
+
+
 ## Load CSV data to SQLite DB
 
 ```shell script
