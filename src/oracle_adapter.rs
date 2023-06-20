@@ -50,7 +50,7 @@ pub fn read_oracle(table_ic: &str) -> sibyl::Result<Vec<Bdt>> {
             data: Vec::new(),
         };
 
-        session.get_table_names(table_ic, |row| {
+        session.get_table_names(ic, |row| {
             let table_name = TableName::new(
                 Language::from_str(row.get("LNG_CODE")?).unwrap(),
                 row.get("LNG_CODE")?,
@@ -61,7 +61,7 @@ pub fn read_oracle(table_ic: &str) -> sibyl::Result<Vec<Bdt>> {
             Ok(())
         })?;
 
-        session.business_table_column_definition(table_ic, |row| {
+        session.business_table_column_definition(ic, |row| {
             let is_key_str: &str = row.get("IS_KEY")?;
             let cdf_ic: Option<String> = row.get("CODIFICATOR_IC")?;
             let select_params: Option<String> = row.get("SELECT_PARAMS")?;
@@ -93,7 +93,7 @@ pub fn read_oracle(table_ic: &str) -> sibyl::Result<Vec<Bdt>> {
             Ok(())
         })?;
 
-        session.business_table_data(table_ic, |row| {
+        session.business_table_data(ic, |row| {
             let valid_from: Option<oracle::Date> = row.get("VALID_FROM")?;
             let valid_to: Option<oracle::Date> = row.get("VALID_TO")?;
             let cdf1: Option<String> = row.get("CDF1_IC")?;

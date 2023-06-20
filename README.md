@@ -36,6 +36,12 @@ or to save specific BDT to CSV execute:
 balcia-bdt-v2.exe oracle AL01_PACKAGE_DEALS | ./target/debug/balcia-bdt-v2 csv write ./data/TEST/
 ```
 
+You can extract multiple BDTs using mask:
+
+```shell script
+balcia-bdt-v2.exe oracle PRODUCT_%% >./data/PRODUCT.json
+```
+
 ## Getting BDT from oracle DB and generating oracle load scripts from it
 
 First load BDT from oracle to json
