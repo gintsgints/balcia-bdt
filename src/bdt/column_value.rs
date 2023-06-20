@@ -117,7 +117,7 @@ impl RowValues {
             Some(column_value) => values.push(column_value),
             None => {}
         };
-        match RowValues::check_and_add_date_field(columns, "VALID_TO", row.valid_from) {
+        match RowValues::check_and_add_date_field(columns, "VALID_TO", row.valid_to) {
             Some(column_value) => values.push(column_value),
             None => {}
         };
