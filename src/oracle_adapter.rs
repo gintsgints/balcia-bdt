@@ -53,9 +53,9 @@ pub fn read_oracle(table_ic: &str) -> sibyl::Result<Vec<Bdt>> {
         session.get_table_names(ic, |row| {
             let table_name = TableName::new(
                 Language::from_str(row.get("LNG_CODE")?).unwrap(),
-                row.get("LNG_CODE")?,
-                row.get("LNG_CODE")?,
-                row.get("LNG_CODE")?,
+                row.get("NAME")?,
+                row.get("PRINT_NAME")?,
+                row.get("SHORT_PRINT_NAME")?,
             );
             bdt.names.push(table_name);
             Ok(())
