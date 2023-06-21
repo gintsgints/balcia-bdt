@@ -1,5 +1,6 @@
 use std::error::Error;
-use std::io::stdout;
+use std::fs::File;
+use std::io::BufWriter;
 
 use handlebars::{Context, Handlebars, Helper, Output, RenderContext, RenderError};
 use serde::Serialize;
@@ -93,21 +94,22 @@ struct BdtList {
     tables: Vec<Bdt>,
 }
 
-pub fn write_bdt(tables: Vec<Bdt>) -> Result<(), Box<dyn Error>> {
+pub fn write_bdt(tables: Vec<Bdt>, filename: &str) -> Result<(), Box<dyn Error>> {
     let mut handlebars = Handlebars::new();
     handlebars.register_helper("yn", Box::new(yn_helper));
     handlebars.register_helper("df", Box::new(data_field_helper));
     handlebars
         .register_template_file("template", "./render/bdtlist.hbs")
         .unwrap();
-    let mut output_file = stdout();
+    let file = File::create(filename)?;
+    let mut writer = BufWriter::new(file);
     let bdtlist = BdtList {
         tables: tables
             .into_iter()
             .filter(|bdt| !"skip".eq(bdt.skip.as_str()))
             .collect(),
     };
-    handlebars.render_to_write("template", &bdtlist, &mut output_file)?;
+    handlebars.render_to_write("template", &bdtlist, &mut writer)?;
 
     Ok(())
 }

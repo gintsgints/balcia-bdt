@@ -62,16 +62,22 @@ pub enum CsvSubCommand {
 pub struct CsvReadCommand {
     /// path to csv file directory
     path: String,
+    /// json output file path with filename
+    filename: String,
 }
 
 #[derive(Debug, Args)]
 pub struct CsvWriteCommand {
+    /// json input file path with filename
+    filename: String,
     /// path to csv file directory
     path: String,
 }
 
 #[derive(Debug, Args)]
 pub struct CsvDataCommand {
+    /// json input file path with filename
+    filename: String,
     /// path to csv file directory
     path: String,
     /// Name of the table to extrace
@@ -81,17 +87,26 @@ pub struct CsvDataCommand {
 #[derive(Debug, Args)]
 #[cfg(feature = "oracle")]
 pub struct OracleCommand {
-    /// business table IC code
+    /// business table IC code or LIKE mask
     table_ic_code: String,
+    /// json output file path with filename
+    filename: String,
 }
 
 #[derive(Debug, Args)]
-pub struct SqliteCommand {}
+pub struct SqliteCommand {
+    /// json output file path with filename
+    filename: String,
+}
 
 #[derive(Debug, Args)]
 pub struct SqlCommand {
+    /// json input file path with filename
+    filename: String,
     /// business table IC code
     table_ic_code: Option<String>,
+    /// sql output file full path
+    sqlfile: String,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -102,15 +117,15 @@ fn main() -> Result<(), Box<dyn Error>> {
             CsvSubCommand::Read(args) => {
                 let adapter = CsvAdapter::new(String::from(&args.path));
                 let v: Vec<Bdt> = adapter.collect();
-                JsonAdapter::write_bdt(v)?;
+                JsonAdapter::write_bdt(v, &args.filename)?;
             }
             CsvSubCommand::Write(args) => {
-                let v: Vec<Bdt> = JsonAdapter::read_bdt()?;
+                let v: Vec<Bdt> = JsonAdapter::read_bdt(&args.filename)?;
                 let writer = CsvWriter::new();
                 writer.write_bdt(v, String::from(&args.path))?;
             }
             CsvSubCommand::Data(args) => {
-                let v: Vec<Bdt> = JsonAdapter::read_bdt()?;
+                let v: Vec<Bdt> = JsonAdapter::read_bdt(&args.filename)?;
 
                 if let Some(bdt) = v.into_iter().find(|bdt| bdt.ic == args.table) {
                     csv_data_adapter::write_csv_data(&args.path, &bdt)?;
@@ -122,21 +137,22 @@ fn main() -> Result<(), Box<dyn Error>> {
         #[cfg(feature = "oracle")]
         Adapter::Oracle(args) => {
             let v: Vec<Bdt> = oracle_adapter::read_oracle(&args.table_ic_code)?;
-            JsonAdapter::write_bdt(v)?;
+            JsonAdapter::write_bdt(v, &args.filename)?;
         }
-        Adapter::Sqlite(_args) => {
-            let v: Vec<Bdt> = JsonAdapter::read_bdt()?;
+        Adapter::Sqlite(args) => {
+            let v: Vec<Bdt> = JsonAdapter::read_bdt(&args.filename)?;
             SqliteAdapter::write_bdt(v)?;
         }
         Adapter::Sql(args) => {
-            let v: Vec<Bdt> = JsonAdapter::read_bdt()?;
+            let v: Vec<Bdt> = JsonAdapter::read_bdt(&args.filename)?;
             match &args.table_ic_code {
                 Some(table) => {
-                    let filtered: Vec<Bdt> = v.into_iter().filter(|flt| table.eq(&flt.ic)).collect();
-                    crate::sql_adapter::write_bdt(filtered)?;
-                },
+                    let filtered: Vec<Bdt> =
+                        v.into_iter().filter(|flt| table.eq(&flt.ic)).collect();
+                    crate::sql_adapter::write_bdt(filtered, &args.sqlfile)?;
+                }
                 None => {
-                    crate::sql_adapter::write_bdt(v)?;
+                    crate::sql_adapter::write_bdt(v, &args.sqlfile)?;
                 }
             }
         }
