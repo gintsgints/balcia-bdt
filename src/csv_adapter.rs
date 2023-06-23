@@ -201,7 +201,7 @@ mod tests {
 
     #[test]
     fn test_prepeare_data() -> Result<(), Box<dyn Error>> {
-        let v: Vec<Bdt> = JsonAdapter::read_bdt_from_file("./data/TT/TT.json")?;
+        let v: Vec<Bdt> = JsonAdapter::read_bdt("./data/TT/TT.json")?;
         let wrtr = CsvWriter::new();
         let (tables, columns, datas) = CsvWriter::prepeare_data(&wrtr, v)?;
         assert_eq!(tables.len(), 5);
