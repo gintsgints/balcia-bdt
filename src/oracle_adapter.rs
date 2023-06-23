@@ -7,7 +7,7 @@ use sibyl as oracle;
 
 use crate::bdt::column_type::ColumnType;
 use crate::bdt::column_value::RowValues;
-use crate::bdt::table_name::{Language, TableName, TableNameList};
+use crate::bdt::table_name::{Language, Name, NameList};
 use crate::bdt::*;
 use crate::csv_adapter::csv_model::{ColumnRow, DataRow};
 
@@ -43,7 +43,7 @@ pub fn read_oracle(table_ic: &str) -> sibyl::Result<Vec<Bdt>> {
         let mut bdt = Bdt {
             skip: "".to_string(),
             ic: ic.to_string(),
-            names: TableNameList::new(Vec::new()),
+            names: NameList::new(Vec::new()),
             valid_from: to_naive_date(valid_from),
             valid_to: to_naive_date(valid_to),
             columns: Vec::new(),
@@ -51,7 +51,7 @@ pub fn read_oracle(table_ic: &str) -> sibyl::Result<Vec<Bdt>> {
         };
 
         session.get_table_names(ic, |row| {
-            let table_name = TableName::new(
+            let table_name = Name::new(
                 Language::from_str(row.get("LNG_CODE")?).unwrap(),
                 row.get("NAME").unwrap_or_default(),
                 row.get("PRINT_NAME").unwrap_or_default(),

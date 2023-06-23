@@ -6,9 +6,9 @@ use std::fs::File;
 use csv::{DeserializeRecordsIntoIter, ReaderBuilder, WriterBuilder};
 use serde::{Deserialize, Serialize};
 
-use crate::bdt::table_name::{Language, TableName};
+use crate::bdt::table_name::{Language, Name};
 use crate::bdt::*;
-use crate::bdt::{column_value::RowValues, table_name::TableNameList};
+use crate::bdt::{column_value::RowValues, table_name::NameList};
 
 use self::csv_model::{ColumnRow, DataRow, TableRow};
 
@@ -77,21 +77,21 @@ impl Iterator for CsvAdapter {
                     let mut bdt = Bdt {
                         skip: row.skip,
                         ic: row.ic,
-                        names: TableNameList::new(Vec::new()),
+                        names: NameList::new(Vec::new()),
                         valid_from: row.valid_from,
                         valid_to: row.valid_to,
                         columns: Vec::new(),
                         data: Vec::new(),
                     };
 
-                    let en_name = TableName::new(
+                    let en_name = Name::new(
                         Language::EN,
                         row.name_en.clone(),
                         row.print_name_en.clone(),
                         row.short_print_name_en.clone(),
                     );
                     bdt.names.push(en_name);
-                    let lv_name = TableName::new(
+                    let lv_name = Name::new(
                         Language::LV,
                         row.name_lv.clone(),
                         row.print_name_lv.clone(),

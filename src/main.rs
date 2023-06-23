@@ -1,4 +1,5 @@
 mod bdt;
+mod classifier;
 mod csv_adapter;
 mod csv_data_adapter;
 mod format;

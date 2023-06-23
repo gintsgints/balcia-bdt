@@ -69,7 +69,7 @@ mod tests {
     use crate::bdt::{
         column_type::ColumnType,
         column_value::{ColumnValue, ColumnValueType},
-        table_name::TableNameList,
+        table_name::NameList,
         Column, RowValues,
     };
 
@@ -179,7 +179,7 @@ mod tests {
         Bdt {
             skip: "".to_string(),
             ic: "".to_string(),
-            names: TableNameList::new(vec![]),
+            names: NameList::new(vec![]),
             valid_from: None,
             valid_to: None,
             columns: vec![col1, col2, col3, col4, col5, col6],

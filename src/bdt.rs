@@ -2,7 +2,7 @@ use chrono::NaiveDate;
 pub use column_value::RowValues;
 use serde::{Deserialize, Serialize};
 
-use crate::bdt::table_name::TableNameList;
+use crate::bdt::table_name::NameList;
 use crate::format::lv_date_format;
 
 pub mod column_type;
@@ -27,7 +27,7 @@ pub struct Column {
 pub struct Bdt {
     pub skip: String,
     pub ic: String,
-    pub names: TableNameList,
+    pub names: NameList,
     #[serde(with = "lv_date_format")]
     pub valid_from: Option<NaiveDate>,
     #[serde(with = "lv_date_format")]
