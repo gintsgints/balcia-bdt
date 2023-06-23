@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::bdt::column_type::ColumnType;
 use crate::bdt::*;
 use crate::format::lv_date_format;
+use crate::l11n::language::Language;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct TableRow {
@@ -43,33 +44,33 @@ impl From<&Bdt> for TableRow {
             sequence: None,
             name_lv: bdtrec
                 .names
-                .get_table_name(table_name::Language::LV)
+                .get_table_name(Language::LV)
                 .unwrap_or_default()
                 .name
                 .clone(),
             print_name_lv: bdtrec
                 .names
-                .get_table_name(table_name::Language::LV)
+                .get_table_name(Language::LV)
                 .unwrap_or_default()
                 .print_name,
             short_print_name_lv: bdtrec
                 .names
-                .get_table_name(table_name::Language::LV)
+                .get_table_name(Language::LV)
                 .unwrap_or_default()
                 .short_print_name,
             name_en: bdtrec
                 .names
-                .get_table_name(table_name::Language::EN)
+                .get_table_name(Language::EN)
                 .unwrap_or_default()
                 .name,
             print_name_en: bdtrec
                 .names
-                .get_table_name(table_name::Language::EN)
+                .get_table_name(Language::EN)
                 .unwrap_or_default()
                 .print_name,
             short_print_name_en: bdtrec
                 .names
-                .get_table_name(table_name::Language::EN)
+                .get_table_name(Language::EN)
                 .unwrap_or_default()
                 .short_print_name,
             agc_tariff_plan_id: None,

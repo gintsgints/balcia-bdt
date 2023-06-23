@@ -1,31 +1,8 @@
-use std::str::FromStr;
-
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
-pub enum Language {
-    #[default]
-    EN,
-    LV,
-    PL,
-    LT,
-}
+use crate::l11n::{language::Language};
 
 #[allow(dead_code)]
-
-impl FromStr for Language {
-    type Err = ();
-
-    fn from_str(input: &str) -> Result<Language, Self::Err> {
-        match input {
-            "EN" => Ok(Language::EN),
-            "LV" => Ok(Language::LV),
-            "PL" => Ok(Language::PL),
-            "LT" => Ok(Language::LT),
-            _ => Err(()),
-        }
-    }
-}
 
 #[derive(Clone, Debug, Serialize, Deserialize, Default)]
 pub struct Name {

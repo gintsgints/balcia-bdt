@@ -6,9 +6,10 @@ use std::fs::File;
 use csv::{DeserializeRecordsIntoIter, ReaderBuilder, WriterBuilder};
 use serde::{Deserialize, Serialize};
 
-use crate::bdt::table_name::{Language, Name};
+use crate::bdt::table_name::{Name};
 use crate::bdt::*;
 use crate::bdt::{column_value::RowValues, table_name::NameList};
+use crate::l11n::language::Language;
 
 use self::csv_model::{ColumnRow, DataRow, TableRow};
 

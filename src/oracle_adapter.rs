@@ -7,7 +7,7 @@ use sibyl as oracle;
 
 use crate::bdt::column_type::ColumnType;
 use crate::bdt::column_value::RowValues;
-use crate::bdt::table_name::{Language, Name, NameList};
+use crate::bdt::table_name::{Name, NameList};
 use crate::bdt::*;
 use crate::csv_adapter::csv_model::{ColumnRow, DataRow};
 
@@ -25,6 +25,8 @@ fn to_naive_date(date: Option<oracle::Date>) -> Option<NaiveDate> {
 
 #[cfg(not(feature = "tokio"))]
 pub fn read_oracle(table_ic: &str) -> sibyl::Result<Vec<Bdt>> {
+    use crate::l11n::language::Language;
+
     let oracle = sibyl::env()?;
 
     dotenv().ok();
