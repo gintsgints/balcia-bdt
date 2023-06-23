@@ -103,10 +103,10 @@ pub struct SqliteCommand {
 pub struct SqlCommand {
     /// json input file path with filename
     filename: String,
-    /// business table IC code
-    table_ic_code: Option<String>,
     /// sql output file full path
     sqlfile: String,
+    /// (optional) business table IC code to filter out
+    table_ic_code: Option<String>,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {

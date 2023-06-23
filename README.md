@@ -27,7 +27,7 @@ So to convert specific BDT from oracle database to SQL scripts, one would use ne
 ```shell script
 balcia-bdt-v2.exe oracle --help
 balcia-bdt-v2.exe oracle AL01_PACKAGE_DEALS AL01_PACKAGE_DEALS.json
-balcia-bdt-v2.exe sql AL01_PACKAGE_DEALS.json AL01_PACKAGE_DEALS package_deals.sql
+balcia-bdt-v2.exe sql AL01_PACKAGE_DEALS.json package_deals.sql AL01_PACKAGE_DEALS
 ```
 
 or to save it to CSV execute:
