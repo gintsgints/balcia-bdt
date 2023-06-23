@@ -26,7 +26,7 @@ delete from agc_ctb_data cd where cd.table_type_id = f.get_cdf_id('AGC_CUSTOM_TA
 /
 
 {{#each tables as |bdt|}}
-prompt Loading table {{bdt.names.[0].name}} columns
+prompt Loading table {{bdt.names.names.[0].name}} columns
 {{#each bdt.columns as |column|}}
 INSERT INTO agc_ctb_columns   (ID, LOG_CRE_DATE, ADM_CODIFICATOR_ID, TITLE, REF_CODE, SEQUENCE, COL_NAME, IS_KEY, TABLE_TYPE_ID, OPTIONS,SELECT_PARAMS)   SELECT hibernate_sequence.nextval         ,SYSDATE         ,f.get_cdf_id('COD','{{column.col_type.Cdf.codificator_id}}')         ,'{{column.title}}', '{{column.ref_code}}', '{{column.sequence}}', '{{column.name}}', '{{yn column.is_key ~}}'         ,f.get_cdf_id('AGC_CUSTOM_TABLE_TYPE','{{bdt.ic}}')      ,'{{column.options}}'  ,'{{column.col_type.Cdf.select_params}}'         FROM dual    WHERE not exists (select 1 from agc_ctb_columns where COL_NAME='{{column.name}}' and TABLE_TYPE_ID=f.get_cdf_id('AGC_CUSTOM_TABLE_TYPE','{{bdt.ic}}'));
 {{/each}}
@@ -34,7 +34,7 @@ INSERT INTO agc_ctb_columns   (ID, LOG_CRE_DATE, ADM_CODIFICATOR_ID, TITLE, REF_
 {{/each}}
 
 {{#each tables as |bdt|}}
-prompt Loading policy.table {{bdt.names.[0].name}} data
+prompt Loading policy.table {{bdt.names.names.[0].name}} data
 {{#each bdt.data as |data|}}
 {{#if (ne bdt.skip "skipData")}}
 exec cfgload.store_ctb_data('{{bdt.skip}}','{{bdt.ic}}','{{df data.values "VALID_FROM" ~}}','{{df data.values "VALID_TO" ~}}','{{df data.values "CDF1_ID" ~}}','{{df data.values "CDF2_ID" ~}}','{{df data.values "CDF3_ID" ~}}','{{df data.values "CDF4_ID" ~}}','{{df data.values "CDF5_ID" ~}}','{{df data.values "CDF6_ID" ~}}','{{df data.values "CDF7_ID" ~}}','{{df data.values "CDF8_ID" ~}}','{{df data.values "CDF9_ID" ~}}','{{df data.values "CDF10_ID" ~}}','{{df data.values "CDF11_ID" ~}}','{{df data.values "CDF12_ID" ~}}','{{df data.values "CDF13_ID" ~}}','{{df data.values "CDF14_ID" ~}}','{{df data.values "CDF15_ID" ~}}','{{df data.values "NUM1" ~}}','{{df data.values "NUM2" ~}}','{{df data.values "NUM3" ~}}','{{df data.values "NUM4" ~}}','{{df data.values "NUM5" ~}}','{{df data.values "NUM6" ~}}','{{df data.values "NUM7" ~}}','{{df data.values "NUM8" ~}}','{{df data.values "NUM9" ~}}','{{df data.values "NUM10" ~}}','{{df data.values "TEXT1" ~}}','{{df data.values "TEXT2" ~}}','{{df data.values "TEXT3" ~}}','{{df data.values "TEXT4" ~}}','{{df data.values "TEXT5" ~}}','{{df data.values "CDF15_ID" ~}}');
