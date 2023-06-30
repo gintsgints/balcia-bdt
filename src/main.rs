@@ -99,6 +99,10 @@ pub struct OracleCommand {
 pub struct SqliteCommand {
     /// json output file path with filename
     filename: String,
+    /// sql output file full path
+    sqlfile: String,
+    /// (optional) business table IC code to filter out
+    table_ic_code: Option<String>,
 }
 
 #[derive(Debug, Args)]
@@ -143,7 +147,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         Adapter::Sqlite(args) => {
             let v: Vec<Bdt> = JsonAdapter::read_bdt(&args.filename)?;
-            SqliteAdapter::write_bdt(v)?;
+            match &args.table_ic_code {
+                Some(table) => {
+                    let filtered: Vec<Bdt> =
+                        v.into_iter().filter(|flt| table.eq(&flt.ic)).collect();
+                        SqliteAdapter::write_bdt(filtered, &args.sqlfile)?;
+                }
+                None => {
+                    SqliteAdapter::write_bdt(v, &args.sqlfile)?;
+                }
+            }
         }
         Adapter::Sql(args) => {
             let v: Vec<Bdt> = JsonAdapter::read_bdt(&args.filename)?;

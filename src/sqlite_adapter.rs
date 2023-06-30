@@ -1,5 +1,5 @@
-use std::error::Error;
-use std::io::stdout;
+use std::{error::Error, fs::File};
+use std::io::{BufWriter};
 use serde::Serialize;
 use handlebars::{Context, Handlebars, Helper, Output, RenderContext, RenderError};
 
@@ -68,21 +68,22 @@ fn some_helper(
 }
 
 impl SqliteAdapter {
-    pub fn write_bdt(tables: Vec<Bdt>) -> Result<(), Box<dyn Error>> {
+    pub fn write_bdt(tables: Vec<Bdt>, filename: &str) -> Result<(), Box<dyn Error>> {
         let mut handlebars = Handlebars::new();
         handlebars.register_helper("some", Box::new(some_helper));
         handlebars.register_helper("last", Box::new(array_last_comma));
         handlebars
             .register_template_file("template", "./render/sqlite.hbs")
             .unwrap();
-        let mut output_file = stdout();
+        let file = File::create(filename)?;
+        let mut writer = BufWriter::new(file);
         let bdtlist = BdtList {
             tables: tables
                 .into_iter()
                 .filter(|bdt| !"skip".eq(bdt.skip.as_str()))
                 .collect(),
         };
-        handlebars.render_to_write("template", &bdtlist, &mut output_file)?;
+        handlebars.render_to_write("template", &bdtlist, &mut writer)?;
 
         Ok(())
     }
