@@ -57,8 +57,12 @@ fn some_helper(
     let param = h
         .param(0);
     match param {
-        Some(_value) => {
-            write!(out, "TEXT")?;
+        Some(value) => {
+            if value.is_value_missing() {
+                write!(out, "")?;
+            } else {
+                write!(out, "TEXT")?;
+            }
         }
         _ => {
             write!(out, "")?;
@@ -87,4 +91,40 @@ impl SqliteAdapter {
 
         Ok(())
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+
+    use super::*;
+
+    fn setup(source: &str) -> Handlebars {
+        let mut handlebars = Handlebars::new();
+        handlebars
+            .register_template_string("testing", source)
+            .unwrap();
+        return handlebars;
+    }
+
+    #[test]
+    fn give_text_when_value() {
+        let source = r#"{{some isvalue ~}}"#;
+        let mut handlebars = setup(source);
+        handlebars.register_helper("some", Box::new(some_helper));
+        let mut data = HashMap::new();
+        data.insert("isvalue", "other");
+        assert_eq!(handlebars.render("testing", &data).unwrap(), "TEXT");
+    }
+
+    #[test]
+    fn give_no_text_when_value() {
+        let source = r#"{{some isvalue ~}}"#;
+        let mut handlebars = setup(source);
+        handlebars.register_helper("some", Box::new(some_helper));
+        let mut data = HashMap::new();
+        data.insert("noValue", "other");
+        assert_eq!(handlebars.render("testing", &data).unwrap(), "");
+    }
+
 }
