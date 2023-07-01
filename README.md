@@ -45,11 +45,14 @@ balcia-bdt-v2.exe oracle PRODUCT_%% ./data/PRODUCT.json
 ## Load CSV data to SQLite DB
 
 ```shell script
-balcia-bdt-v2.exe oracle TT_EMPREKIS_DATA ./data/TT_EMPREKIS_DATA.json
-balcia-bdt-v2 sqlite .\data\TT_EMPREKIS_DATA.json .\data\TT_EMPREKIS_DATA\create_emprekis.sql
-balcia-bdt-v2 csv data .\data\TT_EMPREKIS_DATA.json .\data\TT_EMPREKIS_DATA\data.csv TT_EMPREKIS_DATA
-sqlite3 ./data/bdt.db
-.read create_emprekis.sql
+balcia-bdt-v2 oracle TT_%% ./data/TT.json
+mkdir ./data/TT
+balcia-bdt-v2 sqlite .\data\TT.json .\data\TT\create_tt.sql
+balcia-bdt-v2 csv data .\data\TT.json .\data\TT\TT_EMPREKIS_DATA.csv TT_EMPREKIS_DATA
+# ... same as above with other tables
+cd ./data/TT
+sqlite3 ./TT.db
+.read create_tt.sql
 .separator ,
 .import --skip 1 ./data/TT_EMPREKIS_DATA/data.csv TT_EMPREKIS_DATA
 ```
