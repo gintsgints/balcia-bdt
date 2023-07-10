@@ -53,7 +53,5 @@ balcia-bdt-v2 csv data .\data\TT.json .\data\TT\TT_EMPREKIS_DATA.csv TT_EMPREKIS
 cd ./data/TT
 sqlite3 ./TT.db
 .read create_tt.sql
-.separator ,
-.import --skip 1 ./data/TT_EMPREKIS_DATA/data.csv TT_EMPREKIS_DATA
 ```
 
