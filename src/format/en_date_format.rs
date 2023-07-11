@@ -2,7 +2,7 @@ use chrono::{DateTime, TimeZone, Utc};
 use serde::{self, Deserializer, de, Serializer};
 use std::fmt;
 
-const FORMAT: &'static str = "%Y-%m-%d %H:%M:%S";
+const FORMAT: &str = "%Y-%m-%d %H:%M:%S";
 
 pub fn serialize<S>(some_date: &Option<DateTime<Utc>>, serializer: S) -> Result<S::Ok, S::Error>
 where

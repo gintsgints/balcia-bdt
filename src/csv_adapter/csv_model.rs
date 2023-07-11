@@ -46,8 +46,7 @@ impl From<&Bdt> for TableRow {
                 .names
                 .get_table_name(Language::LV)
                 .unwrap_or_default()
-                .name
-                .clone(),
+                .name,
             print_name_lv: bdtrec
                 .names
                 .get_table_name(Language::LV)

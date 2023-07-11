@@ -13,14 +13,14 @@ use crate::csv_adapter::csv_model::{ColumnRow, DataRow};
 
 include_sql!("sql/bdt.sql");
 
-const FORMAT: &'static str = "%Y-%m-%d %H:%M:%S";
-const FORMAT_ORACLE: &'static str = "yyyy-mm-dd hh:mi:ss";
+const FORMAT: &str = "%Y-%m-%d %H:%M:%S";
+const FORMAT_ORACLE: &str = "yyyy-mm-dd hh:mi:ss";
 
 fn to_naive_date(date: Option<oracle::Date>) -> Option<NaiveDate> {
     let date_str = date?
         .to_string(FORMAT_ORACLE)
         .expect("Failed toconvert date to sting");
-    return Some(NaiveDate::parse_from_str(&date_str[..], FORMAT).expect("Error converting data"));
+    Some(NaiveDate::parse_from_str(&date_str[..], FORMAT).expect("Error converting data"))
 }
 
 #[cfg(not(feature = "tokio"))]

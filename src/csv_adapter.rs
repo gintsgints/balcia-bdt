@@ -62,12 +62,13 @@ pub struct CsvAdapter {
 
 impl CsvAdapter {
     pub fn new(path: String) -> CsvAdapter {
-        let inner = CsvReader::<TableRow>::new(String::from(path.clone() + "/tables.csv"))
+        let inner = CsvReader::<TableRow>::new(path.clone() + "/tables.csv")
             .expect("Error reading table csv");
         CsvAdapter { path, inner }
     }
 }
 
+#[allow(clippy::never_loop)]
 impl Iterator for CsvAdapter {
     type Item = Bdt;
 
@@ -96,13 +97,12 @@ impl Iterator for CsvAdapter {
                         Language::LV,
                         row.name_lv.clone(),
                         row.print_name_lv.clone(),
-                        row.short_print_name_lv.clone(),
+                        row.short_print_name_lv,
                     );
                     bdt.names.push(lv_name);
 
-                    let columns = CsvReader::<ColumnRow>::new(String::from(
-                        self.path.clone() + "/columns.csv",
-                    ))
+                    let columns = 
+                        CsvReader::<ColumnRow>::new(self.path.clone() + "/columns.csv")
                     .expect("Error reading column csv");
                     for row in columns.filter(|col_row| col_row.table_type_id == bdt.ic) {
                         let col = row.to_column();
@@ -110,8 +110,8 @@ impl Iterator for CsvAdapter {
                     }
 
                     let data =
-                        CsvReader::<DataRow>::new(String::from(self.path.clone() + "/data.csv"))
-                            .expect("Error reading data csv");
+                        CsvReader::<DataRow>::new(self.path.clone() + "/data.csv")
+                    .expect("Error reading data csv");
                     for row in data.filter(|data_row| data_row.table_type == bdt.ic) {
                         let data_row = RowValues::from_data_row(&bdt.columns, &row);
                         bdt.data.push(data_row);
@@ -126,6 +126,8 @@ impl Iterator for CsvAdapter {
 }
 
 pub struct CsvWriter {}
+
+type DataPrepareResult = Result<(Vec<TableRow>, Vec<ColumnRow>, Vec<DataRow>), Box<dyn Error>>;
 
 impl CsvWriter {
     pub fn new() -> Self {
@@ -143,7 +145,7 @@ impl CsvWriter {
         columns_path_string.push_str("/columns.csv");
         self.write_data(&columns, columns_path_string)?;
 
-        let mut data_path_string = path.clone();
+        let mut data_path_string = path;
         data_path_string.push_str("/data.csv");
         self.write_data(&datas, data_path_string)?;
 
@@ -153,7 +155,7 @@ impl CsvWriter {
     fn prepeare_data(
         &self,
         table_list: Vec<Bdt>,
-    ) -> Result<(Vec<TableRow>, Vec<ColumnRow>, Vec<DataRow>), Box<dyn Error>> {
+    ) -> DataPrepareResult {
         let mut tables: Vec<TableRow> = Vec::new();
         let mut columns: Vec<ColumnRow> = Vec::new();
         let mut datas: Vec<DataRow> = Vec::new();
@@ -225,7 +227,7 @@ mod tests {
     fn read_table_with_skip_csv() {
         let iter = CsvReader::<TableRow>::new(String::from("./data/TT/tables.csv"))
             .expect("Error reading csv");
-        let v: Vec<_> = iter.filter(|row| row.skip == String::from("")).collect();
+        let v: Vec<_> = iter.filter(|row| row.skip == *"").collect();
         assert_eq!(v.len(), 3);
         assert_eq!(
             v.get(0).unwrap().ic,
@@ -320,7 +322,7 @@ mod tests {
             "TT02_DEPRECIATION_CONFIG_BY_VEHICLE_AGE"
         );
         assert_eq!(v.get(4).unwrap().columns.get(0).unwrap().name, "AGE_FROM");
-        assert_eq!(v.get(4).unwrap().columns.get(0).unwrap().is_key, false);
+        assert!(!v.get(4).unwrap().columns.get(0).unwrap().is_key);
         assert_eq!(v.get(4).unwrap().data.len(), 3);
     }
 }

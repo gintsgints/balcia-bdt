@@ -104,7 +104,7 @@ mod tests {
         handlebars
             .register_template_string("testing", source)
             .unwrap();
-        return handlebars;
+        handlebars
     }
 
     #[test]

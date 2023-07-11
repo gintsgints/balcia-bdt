@@ -4,7 +4,7 @@ use csv::WriterBuilder;
 
 use crate::bdt::{column_value::ColumnValueType, Bdt};
 
-const FORMAT: &'static str = "%Y-%m-%d";
+const FORMAT: &str = "%Y-%m-%d";
 
 pub fn write_csv_data(path: &String, bdt: &Bdt) -> Result<(), Box<dyn Error>> {
     let data = make_data_rows(bdt);
@@ -16,7 +16,7 @@ pub fn write_csv_data(path: &String, bdt: &Bdt) -> Result<(), Box<dyn Error>> {
 }
 
 fn make_data_rows(bdt: &Bdt) -> Vec<Vec<String>> {
-    let csv_hader = make_header(&bdt);
+    let csv_hader = make_header(bdt);
     make_rows(bdt, csv_hader)
 }
 

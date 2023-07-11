@@ -16,53 +16,41 @@ fn data_field_helper(
 ) -> Result<(), RenderError> {
     let field_value = h
         .param(0)
-        .and_then(|ref v| v.value().as_array())
+        .and_then(|v| v.value().as_array())
         .ok_or(RenderError::new(
             "Param 0 with field value object is required for data field helper.",
         ))?;
     let field_ref = h
         .param(1)
-        .and_then(|ref v| v.value().as_str())
+        .and_then(|v| v.value().as_str())
         .ok_or(RenderError::new(
             "Param 1 with field ref string is required for data field helper.",
         ))?;
 
     for value in field_value.iter() {
         let test_code = value["ref_code"].as_str();
-        match test_code {
-            Some(v) => {
-                if v == field_ref {
-                    let print_value = value["value"].as_object();
-                    match print_value {
-                        Some(v) => {
-                            match v.get("Cdf") {
-                                Some(vv) => write!(out, "{}", vv.as_str().get_or_insert(""))?,
-                                None => {}
-                            }
-                            match v.get("Text") {
-                                Some(vv) => write!(out, "{}", vv.as_str().get_or_insert(""))?,
-                                None => {}
-                            }
-                            match v.get("Num") {
-                                Some(vv) => match vv.as_f64() {
-                                    Some(float_val) => write!(out, "{}", float_val)?,
-                                    None => {}
-                                },
-                                None => {}
-                            }
-                            match v.get("Date") {
-                                Some(vv) => match vv.as_str() {
-                                    Some(vv) => write!(out, "{}", vv)?,
-                                    None => {}
-                                },
-                                None => {}
-                            }
+        if let Some(v) = test_code {
+            if v == field_ref {
+                let print_value = value["value"].as_object();
+                if let Some(pv) = print_value {
+                    if let Some(cdf) = pv.get("Cdf") {
+                        write!(out, "{}", cdf.as_str().get_or_insert(""))?
+                    }
+                    if let Some(text) = pv.get("Text") {
+                        write!(out, "{}", text.as_str().get_or_insert(""))?
+                    }
+                    if let Some(num) = pv.get("Num") {
+                        if let Some(float_val) = num.as_f64() {
+                            write!(out, "{}", float_val)?
                         }
-                        None => {}
+                    }
+                    if let Some(date) = pv.get("Date") {
+                        if let Some(date_val) = date.as_str() {
+                            write!(out, "{}", date_val)?
+                        }
                     }
                 }
             }
-            None => {}
         }
     }
     Ok(())
@@ -77,7 +65,7 @@ fn yn_helper(
 ) -> Result<(), RenderError> {
     let param = h
         .param(0)
-        .and_then(|ref v| v.value().as_bool())
+        .and_then(|v| v.value().as_bool())
         .ok_or(RenderError::new(
             "Param 0 with bool type is required for yn helper.",
         ))?;
@@ -127,7 +115,7 @@ mod tests {
         handlebars
             .register_template_string("testing", source)
             .unwrap();
-        return handlebars;
+        handlebars
     }
 
     #[test]
