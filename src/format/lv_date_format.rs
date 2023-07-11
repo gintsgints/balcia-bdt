@@ -1,5 +1,5 @@
-use chrono::{NaiveDate};
-use serde::{self, Deserializer, de, Serializer};
+use chrono::NaiveDate;
+use serde::{self, de, Deserializer, Serializer};
 use std::fmt;
 
 pub const FORMAT: &str = "%d.%m.%Y";
@@ -8,20 +8,20 @@ pub fn serialize<S>(some_date: &Option<NaiveDate>, serializer: S) -> Result<S::O
 where
     S: Serializer,
 {
-  match some_date {
-    Some(date) => {
-      let s = format!("{}", date.format(FORMAT));
-      serializer.serialize_str(&s)
-    },
-    None => serializer.serialize_none()
-  }
+    match some_date {
+        Some(date) => {
+            let s = format!("{}", date.format(FORMAT));
+            serializer.serialize_str(&s)
+        }
+        None => serializer.serialize_none(),
+    }
 }
 
 pub fn deserialize<'de, D>(d: D) -> Result<Option<NaiveDate>, D::Error>
 where
     D: Deserializer<'de>,
 {
-  d.deserialize_option(OptionalDateTimeFromCustomFormatVisitor)
+    d.deserialize_option(OptionalDateTimeFromCustomFormatVisitor)
 }
 
 struct OptionalDateTimeFromCustomFormatVisitor;
@@ -60,7 +60,6 @@ impl<'de> de::Visitor<'de> for DateTimeFromCustomFormatVisitor {
     where
         E: de::Error,
     {
-        NaiveDate::parse_from_str(value, FORMAT)
-            .map_err(serde::de::Error::custom)
+        NaiveDate::parse_from_str(value, FORMAT).map_err(serde::de::Error::custom)
     }
 }

@@ -113,13 +113,17 @@ impl RowValues {
 
     pub fn from_data_row(columns: &[Column], row: &DataRow) -> RowValues {
         let mut values = RowValues::new();
-        if let Some(column_value) = RowValues::check_and_add_date_field(columns, "VALID_FROM", row.valid_from) {
+        if let Some(column_value) =
+            RowValues::check_and_add_date_field(columns, "VALID_FROM", row.valid_from)
+        {
             values.push(column_value)
         };
-        if let Some(column_value) = RowValues::check_and_add_date_field(columns, "VALID_TO", row.valid_to) {
+        if let Some(column_value) =
+            RowValues::check_and_add_date_field(columns, "VALID_TO", row.valid_to)
+        {
             values.push(column_value)
         };
-        if let Some(column_value) =  RowValues::check_and_add_num_field(columns, "NUM1", row.num1) {
+        if let Some(column_value) = RowValues::check_and_add_num_field(columns, "NUM1", row.num1) {
             values.push(column_value)
         }
         if let Some(column_value) = RowValues::check_and_add_num_field(columns, "NUM2", row.num2) {
@@ -146,67 +150,108 @@ impl RowValues {
         if let Some(column_value) = RowValues::check_and_add_num_field(columns, "NUM9", row.num9) {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_num_field(columns, "NUM10", row.num10) {
+        if let Some(column_value) = RowValues::check_and_add_num_field(columns, "NUM10", row.num10)
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_text_field(columns, "TEXT1", row.text1.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_text_field(columns, "TEXT1", row.text1.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_text_field(columns, "TEXT2", row.text2.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_text_field(columns, "TEXT2", row.text2.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_text_field(columns, "TEXT3", row.text3.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_text_field(columns, "TEXT3", row.text3.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_text_field(columns, "TEXT4", row.text4.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_text_field(columns, "TEXT4", row.text4.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_text_field(columns, "TEXT5", row.text5.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_text_field(columns, "TEXT5", row.text5.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_cdf_field(columns, "CDF1_ID", row.cdf1.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_cdf_field(columns, "CDF1_ID", row.cdf1.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_cdf_field(columns, "CDF2_ID", row.cdf2.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_cdf_field(columns, "CDF2_ID", row.cdf2.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_cdf_field(columns, "CDF3_ID", row.cdf3.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_cdf_field(columns, "CDF3_ID", row.cdf3.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_cdf_field(columns, "CDF4_ID", row.cdf4.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_cdf_field(columns, "CDF4_ID", row.cdf4.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_cdf_field(columns, "CDF5_ID", row.cdf5.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_cdf_field(columns, "CDF5_ID", row.cdf5.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_cdf_field(columns, "CDF6_ID", row.cdf6.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_cdf_field(columns, "CDF6_ID", row.cdf6.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_cdf_field(columns, "CDF7_ID", row.cdf7.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_cdf_field(columns, "CDF7_ID", row.cdf7.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_cdf_field(columns, "CDF8_ID", row.cdf8.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_cdf_field(columns, "CDF8_ID", row.cdf8.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_cdf_field(columns, "CDF9_ID", row.cdf9.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_cdf_field(columns, "CDF9_ID", row.cdf9.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_cdf_field(columns, "CDF10_ID", row.cdf10.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_cdf_field(columns, "CDF10_ID", row.cdf10.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_cdf_field(columns, "CDF11_ID", row.cdf11.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_cdf_field(columns, "CDF11_ID", row.cdf11.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_cdf_field(columns, "CDF12_ID", row.cdf12.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_cdf_field(columns, "CDF12_ID", row.cdf12.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_cdf_field(columns, "CDF13_ID", row.cdf13.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_cdf_field(columns, "CDF13_ID", row.cdf13.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_cdf_field(columns, "CDF14_ID", row.cdf14.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_cdf_field(columns, "CDF14_ID", row.cdf14.clone())
+        {
             values.push(column_value)
         }
-        if let Some(column_value) = RowValues::check_and_add_cdf_field(columns, "CDF15_ID", row.cdf15.clone()) {
+        if let Some(column_value) =
+            RowValues::check_and_add_cdf_field(columns, "CDF15_ID", row.cdf15.clone())
+        {
             values.push(column_value)
         }
         values

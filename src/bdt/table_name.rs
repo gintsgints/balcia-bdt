@@ -1,9 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use crate::l11n::{language::Language};
+use crate::l11n::language::Language;
 
 #[allow(dead_code)]
-
 #[derive(Clone, Debug, Serialize, Deserialize, Default)]
 pub struct Name {
     pub lang: Language,
@@ -13,12 +12,7 @@ pub struct Name {
 }
 
 impl Name {
-    pub fn new(
-        lang: Language,
-        name: String,
-        print_name: String,
-        short_print_name: String,
-    ) -> Name {
+    pub fn new(lang: Language, name: String, print_name: String, short_print_name: String) -> Name {
         Name {
             lang,
             name,

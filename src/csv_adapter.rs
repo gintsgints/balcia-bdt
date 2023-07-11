@@ -6,7 +6,7 @@ use std::fs::File;
 use csv::{DeserializeRecordsIntoIter, ReaderBuilder, WriterBuilder};
 use serde::{Deserialize, Serialize};
 
-use crate::bdt::table_name::{Name};
+use crate::bdt::table_name::Name;
 use crate::bdt::*;
 use crate::bdt::{column_value::RowValues, table_name::NameList};
 use crate::l11n::language::Language;
@@ -101,17 +101,15 @@ impl Iterator for CsvAdapter {
                     );
                     bdt.names.push(lv_name);
 
-                    let columns = 
-                        CsvReader::<ColumnRow>::new(self.path.clone() + "/columns.csv")
-                    .expect("Error reading column csv");
+                    let columns = CsvReader::<ColumnRow>::new(self.path.clone() + "/columns.csv")
+                        .expect("Error reading column csv");
                     for row in columns.filter(|col_row| col_row.table_type_id == bdt.ic) {
                         let col = row.to_column();
                         bdt.columns.push(col);
                     }
 
-                    let data =
-                        CsvReader::<DataRow>::new(self.path.clone() + "/data.csv")
-                    .expect("Error reading data csv");
+                    let data = CsvReader::<DataRow>::new(self.path.clone() + "/data.csv")
+                        .expect("Error reading data csv");
                     for row in data.filter(|data_row| data_row.table_type == bdt.ic) {
                         let data_row = RowValues::from_data_row(&bdt.columns, &row);
                         bdt.data.push(data_row);
@@ -152,10 +150,7 @@ impl CsvWriter {
         Ok(())
     }
 
-    fn prepeare_data(
-        &self,
-        table_list: Vec<Bdt>,
-    ) -> DataPrepareResult {
+    fn prepeare_data(&self, table_list: Vec<Bdt>) -> DataPrepareResult {
         let mut tables: Vec<TableRow> = Vec::new();
         let mut columns: Vec<ColumnRow> = Vec::new();
         let mut datas: Vec<DataRow> = Vec::new();

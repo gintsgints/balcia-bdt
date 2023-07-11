@@ -1,5 +1,5 @@
 use chrono::{DateTime, TimeZone, Utc};
-use serde::{self, Deserializer, de, Serializer};
+use serde::{self, de, Deserializer, Serializer};
 use std::fmt;
 
 const FORMAT: &str = "%Y-%m-%d %H:%M:%S";
@@ -8,20 +8,20 @@ pub fn serialize<S>(some_date: &Option<DateTime<Utc>>, serializer: S) -> Result<
 where
     S: Serializer,
 {
-  match some_date {
-    Some(date) => {
-      let s = format!("{}", date.format(FORMAT));
-      serializer.serialize_str(&s)
-    },
-    None => serializer.serialize_none()
-  }
+    match some_date {
+        Some(date) => {
+            let s = format!("{}", date.format(FORMAT));
+            serializer.serialize_str(&s)
+        }
+        None => serializer.serialize_none(),
+    }
 }
 
 pub fn deserialize<'de, D>(d: D) -> Result<Option<DateTime<Utc>>, D::Error>
 where
     D: Deserializer<'de>,
 {
-  d.deserialize_option(OptionalDateTimeFromCustomFormatVisitor)
+    d.deserialize_option(OptionalDateTimeFromCustomFormatVisitor)
 }
 
 struct OptionalDateTimeFromCustomFormatVisitor;

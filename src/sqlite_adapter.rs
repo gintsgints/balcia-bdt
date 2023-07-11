@@ -1,7 +1,7 @@
-use std::{error::Error, fs::File};
-use std::io::{BufWriter};
-use serde::Serialize;
 use handlebars::{Context, Handlebars, Helper, Output, RenderContext, RenderError};
+use serde::Serialize;
+use std::io::BufWriter;
+use std::{error::Error, fs::File};
 
 use crate::Bdt;
 
@@ -54,8 +54,7 @@ fn some_helper(
     _: &mut RenderContext,
     out: &mut dyn Output,
 ) -> Result<(), RenderError> {
-    let param = h
-        .param(0);
+    let param = h.param(0);
     match param {
         Some(value) => {
             if value.is_value_missing() {
@@ -126,5 +125,4 @@ mod tests {
         data.insert("noValue", "other");
         assert_eq!(handlebars.render("testing", &data).unwrap(), "");
     }
-
 }

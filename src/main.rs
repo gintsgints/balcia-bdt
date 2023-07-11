@@ -1,10 +1,10 @@
 mod bdt;
-mod l11n;
 mod classifier;
 mod csv_adapter;
 mod csv_data_adapter;
 mod format;
 mod json_adapter;
+mod l11n;
 #[cfg(feature = "oracle")]
 mod oracle_adapter;
 mod sql_adapter;
@@ -151,7 +151,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 Some(table) => {
                     let filtered: Vec<Bdt> =
                         v.into_iter().filter(|flt| table.eq(&flt.ic)).collect();
-                        SqliteAdapter::write_bdt(filtered, &args.sqlfile)?;
+                    SqliteAdapter::write_bdt(filtered, &args.sqlfile)?;
                 }
                 None => {
                     SqliteAdapter::write_bdt(v, &args.sqlfile)?;
